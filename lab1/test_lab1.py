@@ -7,8 +7,8 @@ Description:
 
 import pytest
 
-from lab1 import lab1_main as lab1
-from lab1 import InputError
+import lab1_main as lab1
+from lab1_main import InputError
 
 
 def main():

@@ -14,7 +14,25 @@ Description: This module contains the main functionality of Lab1:
 """
 
 import re                   # the standard regex library
-from lab1 import InputError # Input error class from the main module
+
+
+class InputError(ValueError):
+    """
+    Exception raised for errors in user input.
+
+    This class is a custom exception that inherits from ValueError. It is
+    designed to be used when user input validation fails. The exception
+    is initialized with a message that provides details about the specific
+    validation error.
+    """
+
+    def __init__(self, message: str) -> None:
+        """
+        Initialize the exception with a description of the input error.
+
+        :param message: A message describing the validation failure.
+        """
+        super().__init__(message)
 
 def get_state_name(abbreviation: str) -> str:
     """
@@ -242,23 +260,20 @@ def get_state() -> tuple[str, str]:
         tuple[str, str]: A tuple containing the state abbreviation and
         the full name of the state.
     """
-    stateless = True
     state = ""
     abbreviation = ""
 
-    while stateless:
-        try:
-            print("Please enter your state abbreviation (i.e. CA for California): ")
-            # Prompt for input and convert it to upper-case.  get_state_name()
-            # will handle validation and raise an exception if the
-            # abbreviation is invalid.
-            abbreviation = input().upper()
-            state = get_state_name(abbreviation)
-            if state != "":
-                stateless = False
-        except InputError:
-            print(f"Invalid state abbreviation: {abbreviation!r}.")
-            print("Please enter a valid state abbreviation.")
+    try:
+        print("Please enter your state abbreviation (i.e. CA for California): ")
+        # Prompt for input and convert it to upper-case.  get_state_name()
+        # will handle validation and raise an exception if the
+        # abbreviation is invalid.
+        abbreviation = input().upper()
+        state = get_state_name(abbreviation)
+    except InputError as ex:
+        print(f"Invalid state abbreviation: {abbreviation!r}.")
+        print("Please enter a valid state abbreviation.")
+        raise InputError(f"No valid state abbreviation for {abbreviation!r}.") from ex
 
     # Return the abbreviation, as well as the full name of the state
     return abbreviation, state
@@ -414,9 +429,12 @@ def main():
     # and zipcode.
     if can_vote:
         first_name, last_name = get_name()
-        st, state = get_state() # The full state name is used in the dialogue,
-                                # but the 2-character abbreviation is used for
-                                # the mailing address
+        try:
+            st, state = get_state() # The full state name is used in the dialogue,
+                                    # but the 2-character abbreviation is used for
+                                    # the mailing address
+        except InputError as ex:
+            raise InputError("Please enter a valid state abbreviation.") from ex
         zipcode = get_zipcode()
 
         print(f"Thank you, {first_name}. You are eligible to vote in {state}. Do "
