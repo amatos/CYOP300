@@ -13,7 +13,7 @@ Description: This module contains the main functionality of Lab1:
       - Offer to register the user to vote
 """
 
-import re                   # the standard regex library
+import re  # the standard regex library
 
 
 class InputError(ValueError):
@@ -33,6 +33,7 @@ class InputError(ValueError):
         :param message: A message describing the validation failure.
         """
         super().__init__(message)
+
 
 def get_state_name(abbreviation: str) -> str:
     """
@@ -125,8 +126,9 @@ def get_state_name(abbreviation: str) -> str:
     # If `abbreviation` is not a key in state_abbrev_map (that is, isn't a valid
     # US state abbreviation), raise an exception.
     if abbreviation not in state_abbrev_map:
-        raise InputError(f"{abbreviation!r} is not a recognised US state "
-                         f"abbreviation.")
+        raise InputError(
+            f"{abbreviation!r} is not a recognised US state " f"abbreviation."
+        )
 
     # Otherwise, return the name of the state corresponding to the abbreviation.
     # This serves as a check that the abbreviation maps to an actual state.
@@ -150,9 +152,9 @@ def get_age() -> int | bool:
     """
 
     # Initialize variables
-    confirmed_age = False   # Used in while loop to check if age is confirmed.
-    age = False             # Return value.  int if the age is valid, False
-                            # if an invalid age is provided.
+    confirmed_age = False  # Used in while loop to check if age is confirmed.
+    age = False  # Return value.  int if the age is valid, False
+    # if an invalid age is provided.
 
     # Loop until a valid age entered (or confirmed if age > 100), of the user
     # enters q to quit.
@@ -167,13 +169,17 @@ def get_age() -> int | bool:
         # be possible), or higher than 120, which is a reasonable value for
         # a human maximum.
         if age < 18:
-            print("You are not yet old enough to vote.  Please return when "
-                  "you are 18 years of age or older.")
+            print(
+                "You are not yet old enough to vote.  Please return when "
+                "you are 18 years of age or older."
+            )
             age = -1
             confirmed_age = True
         elif age > 120:
-            print("Your age is above the known maximum age. Please contact "
-                  "your local election official for more information.")
+            print(
+                "Your age is above the known maximum age. Please contact "
+                "your local election official for more information."
+            )
             age = -1
             confirmed_age = True
         elif age >= 100:
@@ -194,6 +200,7 @@ def get_age() -> int | bool:
         return age
     return False
 
+
 def check_uncommon_age(age: int) -> tuple[bool, int]:
     """
     If a user provides an age between 100 and 120 inclusive, verify with the
@@ -210,14 +217,16 @@ def check_uncommon_age(age: int) -> tuple[bool, int]:
         user quits.
     """
     age_prompt = False  # Used in while loop in case we need to re-prompt
-                        # for age.
-    check = False       # Boolean value to indicate success or failure of age
-                        # confirmation.
-    confirmation = ""   # Used to store user input for confirmation of age.
-                        # Should be Y, N, or Q.
-    print("Your age is higher than usual. Please confirm that you "
-          f"are {age} years old. Please enter Y for yes, N for no, "
-          "or Q to quit.")
+    # for age.
+    check = False  # Boolean value to indicate success or failure of age
+    # confirmation.
+    confirmation = ""  # Used to store user input for confirmation of age.
+    # Should be Y, N, or Q.
+    print(
+        "Your age is higher than usual. Please confirm that you "
+        f"are {age} years old. Please enter Y for yes, N for no, "
+        "or Q to quit."
+    )
     # Loop until a valid confirmation is entered (Y, N, or Q).
     while not age_prompt:
         # Try block to get user input.  If non-string input is provided,
@@ -245,6 +254,7 @@ def check_uncommon_age(age: int) -> tuple[bool, int]:
         age = -1
     # Return the tuple containing the confirmation status and age.
     return check, age
+
 
 def get_state() -> tuple[str, str]:
     """
@@ -278,6 +288,7 @@ def get_state() -> tuple[str, str]:
     # Return the abbreviation, as well as the full name of the state
     return abbreviation, state
 
+
 def get_country_of_citizenship() -> str | None:
     """
     Prompts the user to input their country of citizenship and validates the
@@ -303,12 +314,14 @@ def get_country_of_citizenship() -> str | None:
     while not confirmed:
         print("Please enter your country of citizenship: ")
         citizenship = input().upper()
-        if citizenship in ('USA', 'U.S.A.', 'U.S.'):
+        if citizenship in ("USA", "U.S.A.", "U.S."):
             citizenship = "United States".upper()
         while citizenship == "America".upper():
-            print("Did you mean United States of America?  Please enter United "
-                  "States of America, United States, USA, U.S.A., US, or U.S. "
-                  "for your country of citizenship.")
+            print(
+                "Did you mean United States of America?  Please enter United "
+                "States of America, United States, USA, U.S.A., US, or U.S. "
+                "for your country of citizenship."
+            )
             citizenship = input().upper()
         # The pattern explanation:
         # ^: Matches the start of the string.
@@ -321,10 +334,13 @@ def get_country_of_citizenship() -> str | None:
         if re.match(pattern, citizenship):
             confirmed = True
         else:
-            print(f"Country names should include only alpha characters, and "
-                  f"possibly a space.  You entered {citizenship}. Please enter "
-                  f"a valid country of citizenship.")
+            print(
+                f"Country names should include only alpha characters, and "
+                f"possibly a space.  You entered {citizenship}. Please enter "
+                f"a valid country of citizenship."
+            )
     return citizenship
+
 
 def get_name() -> tuple[str, str]:
     """
@@ -364,8 +380,10 @@ def get_zipcode() -> str:
 
     while not valid_zip:
         print("Please enter your zipcode: ")
-        print("please use either a 5-digit zipcode or zip+4 zipcode with "
-              "a dash separating the group of 5 and 4, or q to quit:")
+        print(
+            "please use either a 5-digit zipcode or zip+4 zipcode with "
+            "a dash separating the group of 5 and 4, or q to quit:"
+        )
         zipcode = input()
         if re.fullmatch(pattern, zipcode):
             valid_zip = True
@@ -375,6 +393,7 @@ def get_zipcode() -> str:
             print("Invalid zipcode.  Please re-enter.")
 
     return zipcode
+
 
 def main():
     """
@@ -408,8 +427,9 @@ def main():
         # Since it is not uncommon for the entire formal country name to be
         # spelled out, in case the user provides "United States of America", we
         # only look at the first 13 characters of the string
-        if ((country_of_citizenship[0:13] == "UNITED STATES") or
-            (country_of_citizenship == "US")):
+        if (country_of_citizenship[0:13] == "UNITED STATES") or (
+            country_of_citizenship == "US"
+        ):
             citizenship = True
 
         # For the remaining questions, it only makes sense to ask the user for
@@ -419,8 +439,10 @@ def main():
         # Otherwise, print a message indicating that the user is not eligible
         # to vote.
         if citizenship and age:
-            print("Congratulations!  As a US Citizen, 18 years of age or older, "
-                  "you are eligible to vote.\n\n")
+            print(
+                "Congratulations!  As a US Citizen, 18 years of age or older, "
+                "you are eligible to vote.\n\n"
+            )
             can_vote = True
         elif not citizenship:
             print("Sorry, you are not a US citizen. You are not eligible to vote.\n")
@@ -430,15 +452,17 @@ def main():
     if can_vote:
         first_name, last_name = get_name()
         try:
-            st, state = get_state() # The full state name is used in the dialogue,
-                                    # but the 2-character abbreviation is used for
-                                    # the mailing address
+            st, state = get_state()  # The full state name is used in the dialogue,
+            # but the 2-character abbreviation is used for
+            # the mailing address
         except InputError as ex:
             raise InputError("Please enter a valid state abbreviation.") from ex
         zipcode = get_zipcode()
 
-        print(f"Thank you, {first_name}. You are eligible to vote in {state}. Do "
-              f"you want to register? (y/n)")
+        print(
+            f"Thank you, {first_name}. You are eligible to vote in {state}. Do "
+            f"you want to register? (y/n)"
+        )
         answer = input().upper()
         # If the user indicates that they want to register, print out a
         # registration summary and state that their registration has been
@@ -446,15 +470,17 @@ def main():
         # If the user indicates that they do not want to register, print
         # a message indicating that they have not been registered.
         if answer == "Y":
-            print("\n" + "*"*80)
+            print("\n" + "*" * 80)
             print("Your voter registration is as follows:")
             print(f"Name: {first_name} {last_name}")
             print(f"Age: {age}")
             print(f"State of residency: {state} ({st})")
             print(f"Zipcode: {zipcode}")
             print(f"Country of citizenship: {country_of_citizenship}")
-            print("\n\nYour voter registration has been submitted. You should "
-                  "receive your voter registration card within 3 weeks.\n\n")
+            print(
+                "\n\nYour voter registration has been submitted. You should "
+                "receive your voter registration card within 3 weeks.\n\n"
+            )
             print("*" * 80)
             print("The mailing label for your voter registration card is:")
             print(f"{first_name} {last_name}")
@@ -468,6 +494,7 @@ def main():
             print("*" * 80)
         else:
             print("Invalid input.  Please enter y or n.")
+
 
 if __name__ == "__main__":
     main()
