@@ -1,0 +1,128 @@
+(.venv) Codex:lab2 alberth$ pylint .
+************* Module lab2.lab2prompt
+lab2prompt.py:10:0: C0301: Line too long (155/100) (line-too-long)
+************* Module lab2.main
+main.py:41:4: W0105: String statement has no effect (pointless-string-statement)
+main.py:80:4: W0212: Access to a protected member _Prompt of a client class (protected-access)
+main.py:114:4: W0212: Access to a protected member _Prompt of a client class (protected-access)
+main.py:147:4: W0212: Access to a protected member _Prompt of a client class (protected-access)
+main.py:185:4: W0212: Access to a protected member _Prompt of a client class (protected-access)
+main.py:214:4: W0212: Access to a protected member _Prompt of a client class (protected-access)
+main.py:200:12: W0612: Unused variable 'radius_unit' (unused-variable)
+main.py:201:12: W0612: Unused variable 'height_unit' (unused-variable)
+main.py:252:4: W0212: Access to a protected member _Prompt of a client class (protected-access)
+************* Module lab2.lab2passwd
+lab2passwd.py:10:0: C0301: Line too long (155/100) (line-too-long)
+lab2passwd.py:24:0: C0301: Line too long (101/100) (line-too-long)
+************* Module lab2.lab2common
+lab2common.py:10:0: C0301: Line too long (155/100) (line-too-long)
+lab2common.py:54:0: C0301: Line too long (105/100) (line-too-long)
+lab2common.py:55:0: C0301: Line too long (107/100) (line-too-long)
+lab2common.py:57:0: C0301: Line too long (104/100) (line-too-long)
+lab2common.py:61:0: C0301: Line too long (104/100) (line-too-long)
+lab2common.py:70:8: R1723: Unnecessary "elif" after "break", remove the leading "el" from "elif" (no-else-break)
+************* Module lab2.tests.test_lab2passwd
+tests/test_lab2passwd.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests/test_lab2passwd.py:10:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2passwd.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2passwd.py:41:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2passwd.py:48:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module lab2.tests.conftest
+tests/conftest.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests/conftest.py:10:4: C0116: Missing function or method docstring (missing-function-docstring)
+tests/conftest.py:5:0: R0903: Too few public methods (1/2) (too-few-public-methods)
+************* Module lab2.tests.test_lab2common
+tests/test_lab2common.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests/test_lab2common.py:8:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2common.py:18:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2common.py:28:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2common.py:39:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module lab2.tests
+tests/__init__.py:12:0: C0115: Missing class docstring (missing-class-docstring)
+tests/__init__.py:13:4: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module lab2.tests.test_lab2prompt
+tests/test_lab2prompt.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests/test_lab2prompt.py:6:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2prompt.py:7:4: C0115: Missing class docstring (missing-class-docstring)
+tests/test_lab2prompt.py:11:8: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2prompt.py:7:4: R0903: Too few public methods (1/2) (too-few-public-methods)
+tests/test_lab2prompt.py:16:13: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_lab2prompt.py:21:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2prompt.py:24:4: C0115: Missing class docstring (missing-class-docstring)
+tests/test_lab2prompt.py:28:8: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2prompt.py:24:4: R0903: Too few public methods (1/2) (too-few-public-methods)
+tests/test_lab2prompt.py:33:13: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_lab2prompt.py:39:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2prompt.py:46:8: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_lab2prompt.py:49:4: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_lab2prompt.py:54:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_lab2prompt.py:61:24: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_lab2prompt.py:71:4: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_lab2prompt.py:1:0: W0611: Unused import pytest (unused-import)
+************* Module lab2.tests.test_main
+tests/test_main.py:1:0: C0114: Missing module docstring (missing-module-docstring)
+tests/test_main.py:10:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_main.py:23:8: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_main.py:36:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_main.py:43:8: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_main.py:53:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_main.py:60:8: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_main.py:70:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_main.py:71:4: C0115: Missing class docstring (missing-class-docstring)
+tests/test_main.py:78:8: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_main.py:87:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_main.py:88:4: C0115: Missing class docstring (missing-class-docstring)
+tests/test_main.py:95:8: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_main.py:104:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_main.py:111:8: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_main.py:121:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_main.py:126:8: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_main.py:137:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_main.py:137:41: W0613: Unused argument 'monkeypatch' (unused-argument)
+tests/test_main.py:146:0: C0116: Missing function or method docstring (missing-function-docstring)
+tests/test_main.py:153:8: W0212: Access to a protected member _Prompt of a client class (protected-access)
+tests/test_main.py:3:0: W0611: Unused import sys (unused-import)
+
+-----------------------------------
+Your code has been rated at 8.05/10
+
+Run 2
+
+************* Module lab2.lab2common
+lab2common.py:10:0: C0301: Line too long (155/100) (line-too-long)
+lab2common.py:54:0: C0301: Line too long (105/100) (line-too-long)
+lab2common.py:55:0: C0301: Line too long (107/100) (line-too-long)
+lab2common.py:57:0: C0301: Line too long (104/100) (line-too-long)
+lab2common.py:61:0: C0301: Line too long (104/100) (line-too-long)
+lab2common.py:70:8: R1723: Unnecessary "elif" after "break", remove the leading "el" from "elif" (no-else-break)
+************* Module lab2.lab2passwd
+lab2passwd.py:10:0: C0301: Line too long (155/100) (line-too-long)
+lab2passwd.py:24:0: C0301: Line too long (101/100) (line-too-long)
+************* Module lab2.lab2prompt
+lab2prompt.py:15:0: E0401: Unable to import 'simple_term_menu' (import-error)
+************* Module lab2.main
+main.py:200:12: W0612: Unused variable 'radius_unit' (unused-variable)
+main.py:201:12: W0612: Unused variable 'height_unit' (unused-variable)
+
+-----------------------------------
+Your code has been rated at 9.14/10
+
+Run 3
+
+************* Module lab2.lab2common
+lab2common.py:82:8: R1723: Unnecessary "else" after "break", remove the "else" and de-indent the code inside it (no-else-break)
+************* Module lab2.main
+main.py:200:12: W0612: Unused variable 'radius_unit' (unused-variable)
+main.py:201:12: W0612: Unused variable 'height_unit' (unused-variable)
+
+------------------------------------------------------------------
+Your code has been rated at 9.83/10 (previous run: 9.14/10, +0.69)
+
+
+Run 4
+************* Module lab2.main
+main.py:200:12: W0612: Unused variable 'radius_unit' (unused-variable)
+main.py:201:12: W0612: Unused variable 'height_unit' (unused-variable)
+
+------------------------------------------------------------------
+Your code has been rated at 9.89/10 (previous run: 9.83/10, +0.06)
