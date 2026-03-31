@@ -79,6 +79,8 @@ def modify_state_population(state: dict | None) -> None:
         new_population = lab3common.get_input(int, "Enter the new population: ")
         state["population"] = new_population
         print(f"New population of {state['state']}: {int(state['population']):,}")
+        print("N.b., you must save the changes in order to persist them.")
+        print("They will otherwise be discarded when leaving this function")
         save_changes = lab3common.get_yes_no_input(prompt="Save changes? (y/n): ")
         for s in states:
             if s["state"].lower() == state["state"].lower():
