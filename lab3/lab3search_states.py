@@ -15,25 +15,22 @@ of the flower was sourced from:
 https://www.crestcapital.com/tax/us_states_and_capitals
 """
 
-from term_image.image import from_file
 import os
 from typing import Optional
 
+from term_image.image import from_file
+
 try:
-    import lab3common
-    import lab3prompt
-    import lab3states
-    import lab3graph
-    import lab3modify_pop
-except ImportError:
-    from . import lab3common
-    from . import lab3prompt
-    from . import lab3states
-    from . import lab3graph
-    from . import lab3modify_pop
+    from lab3.lab3states import States
+    from lab3.lab3prompt import Prompt
+    from lab3.lab3common import get_input
+except ImportError as e:
+    from lab3states import States
+    from lab3prompt import Prompt
+    from lab3common import get_input
 
 
-def search_by_abbrev() -> Optional[dict]:
+def search_by_abbrev(states: States) -> Optional[dict]:
     """
     Searches for a U.S. state by its abbreviation and returns the corresponding state
     object if found. If the abbreviation is invalid, the function informs the user and
@@ -43,10 +40,8 @@ def search_by_abbrev() -> Optional[dict]:
         the abbreviation is invalid or the user chooses not to retry.
     :rtype: Optional[lab3states.State]
     """
-    # Create an instance of the States class.
-    states = lab3states.States()
     # Prompt the user to enter a state abbreviation.
-    state_abbrev = lab3common.get_input(str, "Enter the state abbreviation: ")
+    state_abbrev = get_input(str, "Enter the state abbreviation: ")
     # Validate the state abbreviation and retrieve the corresponding state object.
     state = states.get_state_by_abbreviation(state_abbrev)
     # lab3states.States().get_state_by_abbreviation() will return None if the
@@ -61,7 +56,7 @@ def search_by_abbrev() -> Optional[dict]:
     return state
 
 
-def search_by_name() -> Optional[dict]:
+def search_by_name(states: States) -> Optional[dict]:
     """
     Searches for a state by its name and retrieves its corresponding
     representation. If the state name is invalid, the user is notified and
@@ -73,10 +68,8 @@ def search_by_name() -> Optional[dict]:
              or return to the main menu.
     :rtype: State or None
     """
-    # Create an instance of the States class.
-    states = lab3states.States()
     # Prompt the user to enter a state name.
-    state_name = lab3common.get_input(str, "Enter the state name: ")
+    state_name = get_input(str, "Enter the state name: ")
     # Validate the state name and retrieve the corresponding state object.
     state = states.get_state_by_name(state_name)
     # lab3states.States().get_state_by_name() will return None if the state
@@ -89,7 +82,7 @@ def search_by_name() -> Optional[dict]:
     return state
 
 
-def choose_from_list() -> Optional[dict]:
+def choose_from_list(states: States) -> Optional[dict]:
     """
     Allows a user to select a state from a predefined list of options. The chosen
     state is then retrieved and returned as a dictionary containing its
@@ -99,8 +92,6 @@ def choose_from_list() -> Optional[dict]:
              if no valid selection is made.
     :rtype: Optional[dict]
     """
-    # Create an instance of the States class.
-    states = lab3states.States()
     # Define the states in a list.
     options = [
         "Alabama",
@@ -154,14 +145,14 @@ def choose_from_list() -> Optional[dict]:
         "Wisconsin",
         "Wyoming",
     ]
-    option_choice = lab3prompt.Prompt.menu(options)
+    option_choice = Prompt.menu(options)
     # Retrieve the state dictionary corresponding to the chosen option.
     state = states.get_state_by_name(option_choice)
     # Return the state dictionary to the calling function.
     return state
 
 
-def display_state(state_abbrev: str) -> None:
+def display_state(state_abbrev: str, states: States) -> None:
     """
     This function retrieves state information such as name, capital, population,
     and flower based on the given state abbreviation. It also attempts to display
@@ -174,13 +165,13 @@ def display_state(state_abbrev: str) -> None:
            the image.
 
 
+    :param states:
+    :type states:
     :param state_abbrev: The two-letter abbreviation of the state.
     :type state_abbrev: str
     :return: None
     :rtype: None
     """
-    # Create an instance of the States class.
-    states = lab3states.States()
     # Get the state dictionary object based on the passed state abbreviation.
     state = states.get_state_by_abbreviation(state_abbrev)
     # If the state abbreviation returns a dictionary, we can access the
@@ -211,7 +202,7 @@ def display_state(state_abbrev: str) -> None:
     )
 
 
-def display_by_abbrev() -> None:
+def display_by_abbrev(states: States) -> None:
     """
     Displays information for a state based on its abbreviation. Calls
     search_by_abbrev() to retrieve the state data.
@@ -222,16 +213,15 @@ def display_by_abbrev() -> None:
     :return: None
     :rtype: None
     """
-    state = search_by_abbrev()
+    state = search_by_abbrev(states)
     if state:
-        display_state(state["abbreviation"])
-    lab3prompt.reprompt_menu(display_by_abbrev)
+        display_state(state["abbreviation"], states)
 
 
-def display_by_name() -> None:
+def display_by_name(states: States) -> None:
     """
-    Searches for a state by its name, displays its corresponding abbreviation if found,
-    and reprompts the user for further actions if necessary.
+    Searches for a state by its name, displays its corresponding abbreviation
+    if found, and reprompts the user for further actions if necessary.
 
     This was split off from search_by_abbrev() to allow recycling of the
     function by lab3.main
@@ -239,13 +229,12 @@ def display_by_name() -> None:
     :return: None
     :rtype: None
     """
-    state = search_by_name()
+    state = search_by_name(states)
     if state:
-        display_state(state["abbreviation"])
-    lab3prompt.reprompt_menu(display_by_name)
+        display_state(state["abbreviation"], states)
 
 
-def display_from_list() -> None:
+def display_from_list(states: States) -> None:
     """
     Displays a state abbreviation after selection from a list.
 
@@ -255,6 +244,5 @@ def display_from_list() -> None:
     :return: None
     :rtype: None
     """
-    state = choose_from_list()
-    display_state(state["abbreviation"])
-    lab3prompt.reprompt_menu(display_from_list)
+    state = choose_from_list(states)
+    display_state(state["abbreviation"], states)

@@ -21,6 +21,21 @@ import os
 
 
 class States:
+    """
+    Represents a collection of U.S. states and provides functionality for accessing,
+    modifying, and managing state-related data.
+
+    This class is designed to handle state information by loading it from a
+    CSV file, providing methods to retrieve specific state details based on
+    name or abbreviation, updating population information, and writing updated
+    data back to a file. The data handling includes case-insensitive lookups
+    and ensures data integrity by sorting and storing the information consistently.
+
+    :ivar state_data: A sorted list of dictionaries where each dictionary represents
+        state information. Loaded from a CSV file during initialization.
+    :type state_data: list[dict[str, str]]
+    """
+
     def __init__(self) -> None:
         """
         Initialize a class instance by loading the necessary state data.
@@ -67,10 +82,11 @@ class States:
             filename = os.path.join("data", "us_states_modified.csv")
         else:
             filename = os.path.join("data", "us_states.csv")
-        with open(filename, "r") as file:
+        with open(file=filename, mode="r", encoding="utf-8") as file:
             # Load the CSV file into a list of dictionaries
             reader = csv.DictReader(file)
-            # Create a new list of dictionaries sorted by the "state" key, using a lambda function.
+            # Create a new list of dictionaries sorted by the "state" key,
+            # using a lambda function.
             sorted_reader = sorted(reader, key=lambda row: row["state"])
         # Return the resulting sorted list of dictionaries.
         return list(sorted_reader)
@@ -85,7 +101,8 @@ class States:
         :return: None
         :rtype: None
         """
-        with open(os.path.join("data", "us_states_modified.csv"), "w") as file:
+        filename = os.path.join("data", "us_states_modified.csv")
+        with open(file=filename, mode="w", encoding="utf-8") as file:
             writer = csv.DictWriter(file, fieldnames=states_data[0].keys())
             writer.writeheader()
             writer.writerows(states_data)
@@ -116,7 +133,7 @@ class States:
         # guaranteed to return either a single resulting dictionary or None.
         return state[0] if state else None
 
-    def get_state_by_name(self, state_name):
+    def get_state_by_name(self, state_name: str) -> dict[str, str] | None:
         """
         Retrieves state information based on the provided state name,
         ignoring case sensitivity. If a match is found, the method returns

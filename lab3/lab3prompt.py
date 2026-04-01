@@ -12,20 +12,9 @@ Description: Provides a menu-driven terminal interface for my Lab3 application.
 """
 
 from collections.abc import Callable
-from simple_term_menu import TerminalMenu
+from typing import Any
 
-try:
-    import lab3common
-    import lab3search_states
-    import lab3states
-    import lab3graph
-    import lab3modify_pop
-except ImportError:
-    from . import lab3common
-    from . import lab3search_states
-    from . import lab3states
-    from . import lab3graph
-    from . import lab3modify_pop
+from simple_term_menu import TerminalMenu
 
 
 class Prompt:
@@ -80,16 +69,19 @@ class Prompt:
         selected_function = dict_options.get(selection)
         selected_function()
 
+    @staticmethod
+    def indexed_menu(options: list[Any]) -> int:
+        """
+        Displays a terminal-based menu with indexed options and returns the
+        index of the user's selection.
 
-def reprompt_menu(caller_name: Callable[[], None]) -> None:
-    """Re-prompts the user for a valid input based on the provided menu item."""
+        :param options: List of options to display in the menu.
+        :type options: list
 
-    from main import main
+        :return: The index of the option selected by the user.
+        :rtype: int
+        """
 
-    print("")
-    options = {
-        "Try Again": caller_name,
-        "Return to Main Menu": main,
-        "Exit": lab3common.exit_program,
-    }
-    Prompt.dict_menu(options)
+        terminal_menu = TerminalMenu(options)
+        menu_entry_index = terminal_menu.show()
+        return menu_entry_index

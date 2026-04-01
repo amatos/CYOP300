@@ -7,58 +7,58 @@ search_states module for selection of states.
 
 The modify_state_population function allows for updating the population of a
 state and optionally saving the changes to persistent state data in the form
-of an alternate 'modified_us_states.csv' file, saved via a call to
-lab3states.States().write_state_data().
+of an alternate `modified_us_states.csv' file, saved via a call to
+`lab3states.States().write_state_data()'.
 
-As noted in the documentation for lab3states.States(), whenever the class is
-loaded, it checks for the existence of 'modified_us_states.csv', and loads
+As noted in the documentation for `lab3states.States()', whenever the class is
+loaded, it checks for the existence of `modified_us_states.csv', and loads
 that file if it is found.
 """
 
 try:
-    import lab3common
-    import lab3prompt
-    import lab3search_states
-    import lab3states
-    import lab3graph
+    from lab3.lab3common import get_input, get_yes_no_input
+    from lab3.lab3search_states import (
+        choose_from_list,
+        search_by_abbrev,
+        search_by_name,
+    )
+    from lab3.lab3states import States
 except ImportError:
-    from . import lab3common
-    from . import lab3prompt
-    from . import lab3search_states
-    from . import lab3states
-    from . import lab3graph
+    from lab3common import get_input, get_yes_no_input
+    from lab3search_states import choose_from_list, search_by_abbrev, search_by_name
+    from lab3states import States
 
 
-def modify_by_abbrev() -> None:
+def modify_by_abbrev(states: States) -> None:
     """
     Modify the population data of a state retrieved by its abbreviation.
 
     :return: None
     :rtype: None
     """
-    state = lab3search_states.search_by_abbrev()
+    state = search_by_abbrev(states)
     modify_state_population(state)
 
 
-def modify_by_name() -> None:
+def modify_by_name(states: States) -> None:
     """
     Modifies the population of a state identified by its name.
 
     :return: None
     :rtype: None
     """
-    state = lab3search_states.search_by_name()
+    state = search_by_name(states)
     modify_state_population(state)
 
 
-def modify_from_list() -> None:
+def modify_from_list(states: States) -> None:
     """
     Modify a state's population based on a user-selected list of states.
 
     :return: None
     :rtype: None
     """
-    state = lab3search_states.choose_from_list()
+    state = choose_from_list(states)
     modify_state_population(state)
 
 
@@ -73,15 +73,15 @@ def modify_state_population(state: dict | None) -> None:
     :return: None
     :rtype: None
     """
-    states = lab3states.States()
+    states = States()
     if state:
         print(f"Current population of {state['state']}: {int(state['population']):,}")
-        new_population = lab3common.get_input(int, "Enter the new population: ")
+        new_population = get_input(int, "Enter the new population: ")
         state["population"] = new_population
         print(f"New population of {state['state']}: {int(state['population']):,}")
         print("N.b., you must save the changes in order to persist them.")
-        print("They will otherwise be discarded when leaving this function")
-        save_changes = lab3common.get_yes_no_input(prompt="Save changes? (y/n): ")
+        print("They will otherwise be discarded when leaving this program.")
+        save_changes = get_yes_no_input(prompt="Save changes? (y/n): ")
         for s in states:
             if s["state"].lower() == state["state"].lower():
                 s["population"] = state["population"]
