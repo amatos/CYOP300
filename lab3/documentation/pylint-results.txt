@@ -1,0 +1,75 @@
+Run 1:
+λ pylint *.py
+************* Module lab3.lab3graph
+lab3graph.py:28:0: C0301: Line too long (102/100) (line-too-long)
+lab3graph.py:51:8: C0104: Disallowed name "bar" (disallowed-name)
+lab3graph.py:38:4: W0612: Unused variable 'figure' (unused-variable)
+************* Module lab3.lab3main
+lab3main.py:50:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:88:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:111:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:145:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:184:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+************* Module lab3.lab3prompt
+lab3prompt.py:73:0: C0301: Line too long (106/100) (line-too-long)
+lab3prompt.py:71:4: E0213: Method 'indexed_menu' should have "self" as first argument (no-self-argument)
+lab3prompt.py:16:0: C0411: standard import "typing.Any" should be placed before third party import "simple_term_menu.TerminalMenu" (wrong-import-order)
+************* Module lab3.lab3search_states
+lab3search_states.py:26:0: W0702: No exception type(s) specified (bare-except)
+lab3search_states.py:204:0: R1711: Useless return at end of function or method (useless-return)
+lab3search_states.py:221:0: R1711: Useless return at end of function or method (useless-return)
+lab3search_states.py:238:0: R1711: Useless return at end of function or method (useless-return)
+lab3search_states.py:19:0: C0411: standard import "os" should be placed before third party import "term_image.image.from_file" (wrong-import-order)
+lab3search_states.py:20:0: C0411: standard import "typing.Optional" should be placed before third party import "term_image.image.from_file" (wrong-import-order)
+lab3search_states.py:25:4: W0611: Unused exit_program imported from lab3.lab3common (unused-import)
+lab3search_states.py:25:4: W0611: Unused rerun_or_return imported from lab3.lab3common (unused-import)
+************* Module lab3.lab3states
+lab3states.py:85:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+lab3states.py:104:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+************* Module lab3.main
+main.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
+
+------------------------------------------------------------------
+Your code has been rated at 9.02/10
+
+Run 2:
+λ pylint *.py
+************* Module lab3.lab3main
+lab3main.py:50:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:88:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:111:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:145:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:184:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+************* Module lab3.lab3prompt
+lab3prompt.py:73:0: C0301: Line too long (106/100) (line-too-long)
+lab3prompt.py:71:4: E0213: Method 'indexed_menu' should have "self" as first argument (no-self-argument)
+lab3prompt.py:16:0: C0411: standard import "typing.Any" should be placed before third party import "simple_term_menu.TerminalMenu" (wrong-import-order)
+************* Module lab3.lab3search_states
+lab3search_states.py:26:0: W0702: No exception type(s) specified (bare-except)
+lab3search_states.py:204:0: R1711: Useless return at end of function or method (useless-return)
+lab3search_states.py:221:0: R1711: Useless return at end of function or method (useless-return)
+lab3search_states.py:238:0: R1711: Useless return at end of function or method (useless-return)
+lab3search_states.py:19:0: C0411: standard import "os" should be placed before third party import "term_image.image.from_file" (wrong-import-order)
+lab3search_states.py:20:0: C0411: standard import "typing.Optional" should be placed before third party import "term_image.image.from_file" (wrong-import-order)
+lab3search_states.py:25:4: W0611: Unused exit_program imported from lab3.lab3common (unused-import)
+lab3search_states.py:25:4: W0611: Unused rerun_or_return imported from lab3.lab3common (unused-import)
+************* Module lab3.lab3states
+lab3states.py:85:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+lab3states.py:104:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+************* Module lab3.main
+main.py:27:0: C0116: Missing function or method docstring (missing-function-docstring)
+
+------------------------------------------------------------------
+Your code has been rated at 9.14/10 (previous run: 9.02/10, +0.12)
+
+Run 3:
+λ pylint *.py
+************* Module lab3.lab3main
+lab3main.py:50:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:88:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:111:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:145:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+lab3main.py:184:11: W0108: Lambda may not be necessary (unnecessary-lambda)
+
+------------------------------------------------------------------
+Your code has been rated at 9.81/10 (previous run: 9.14/10, +0.67)
