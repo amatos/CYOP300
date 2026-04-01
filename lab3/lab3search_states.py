@@ -188,8 +188,14 @@ def display_state(state_abbrev: str, states: States) -> None:
     # While this should never occur, we check for the existence of the image
     # file anyway, and display a message if the image does not exist.
     if not os.path.exists(state_flower):
-        print("No image found for this state.")
-        return
+        # If the image does not exist in the specified path, we try again,
+        # this time including `lab3' in the path, in case the module is used
+        # from a package and try again.
+        state_flower = os.path.join("lab3", "images", state["abbreviation"] + ".jpg")
+        if not os.path.exists(state_flower):
+            # If the image still does not exist, we inform the user and return.
+            print("No image found for this state.")
+            return
     # Load the image data using term_image.image.from_file() and display the
     # image in the terminal.m
     image = from_file(state_flower)

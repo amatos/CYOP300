@@ -76,8 +76,10 @@ def modify_state_population(state: dict | None) -> None:
     states = States()
     if state:
         print(f"Current population of {state['state']}: {int(state['population']):,}")
-        new_population = get_input(int, "Enter the new population: ")
-        state["population"] = new_population
+        new_population = get_input(str, "Enter the new population: ")
+        # Remove commas if present, convert to integer, and update the
+        # population value in the state dictionary
+        state["population"] = int(str(new_population).replace(",", ""))
         print(f"New population of {state['state']}: {int(state['population']):,}")
         print("N.b., you must save the changes in order to persist them.")
         print("They will otherwise be discarded when leaving this program.")
