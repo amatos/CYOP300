@@ -1,0 +1,26 @@
+Pylint run 1:
+
+λ pylint *.py
+************* Module matrix_game
+matrix_game.py:181:0: C0301: Line too long (115/100) (line-too-long)
+matrix_game.py:182:0: C0301: Line too long (114/100) (line-too-long)
+matrix_game.py:8:0: E0401: Unable to import 'numpy' (import-error)
+matrix_game.py:9:0: E0401: Unable to import 'pandas' (import-error)
+
+-----------------------------------
+Your code has been rated at 8.89/10
+
+Pylint run 2 (I forgot to souce my virtual environment for the first run):
+λ pylint *.py
+************* Module matrix_game
+matrix_game.py:181:0: C0301: Line too long (115/100) (line-too-long)
+matrix_game.py:182:0: C0301: Line too long (114/100) (line-too-long)
+
+------------------------------------------------------------------
+Your code has been rated at 9.81/10 (previous run: 8.89/10, +0.93)
+
+Pylint run 3:
+λ pylint *.py
+
+-------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 9.81/10, +0.19)

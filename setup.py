@@ -9,5 +9,12 @@ setup(
     author="Alberth Matos",
     author_email="alberth@matos.cc",
     description="",
-    requires=["pytest", "simple-term-menu", "term-image", "matplotlib"],
+    requires=[
+        "pytest",
+        "simple-term-menu",
+        "term-image",
+        "matplotlib",
+        "numpy",
+        "pandas",
+    ],
 )
