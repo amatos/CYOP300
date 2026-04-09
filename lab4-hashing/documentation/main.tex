@@ -1,0 +1,129 @@
+\documentclass[12pt]{article}
+\usepackage[american]{babel}
+\usepackage{csquotes}
+\usepackage{fontspec}
+\usepackage{graphicx}
+\usepackage{seqsplit}
+\graphicspath{ {./images/} }
+\usepackage{hyperref}
+
+\usepackage{listings}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{threeparttable}
+\usepackage{textcomp}
+\usepackage{array}
+
+\setmainfont{Hoefler Text}
+\setmonofont{Courier Prime}
+
+\title{Lab 4 Hashing Addendum}
+\author{Alberth Matos}
+
+\date{7 April 2026}
+\hypersetup{
+    pdftitle={Lab 4 hashing addendum},
+    pdfauthor={Alberth Matos},
+    pdfsubject={Lab 4 hashing addendum},
+    pdfkeywords={}
+}
+\lstdefinestyle{numberedLines}{
+    numbers=left,
+    numberstyle=\small,
+    stepnumber=1,
+    numbersep=5pt,
+    frame=none,
+    framerule=0.5pt,
+    framesep=2pt,
+    basicstyle=\ttfamily,
+    showstringspaces=false,
+    breaklines=true,
+    postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\hookrightarrow\space}}
+}
+\lstset{style=numberedLines}
+
+\begin{document}
+\maketitle
+This portion of the lab had us generate 10 passwords in md5, sha256 and sha512, then check if the hashes could easily be broken by \url{Crackstation.net}. Needless to say, simple 1-word passwords were easily broken; although it would be more accurate to say that \url{Crackstation.net} had the precomputed hashes stored for immediate pattern matching. Also to no surprise, passwords with simple and common substitutions or misspellings were also easily matched, i.e. \enquote{p@\$\$w0rd}, \enquote{p@\$\$\$w0rd}, and other similar variants.
+
+What I did find a little surprising is that hashes for combinations of words were not included in Crackstation.net's archive, such as \enquote{correct horse battery staple}\footnote{See \url{https://xkcd.com/936}}. I would expect that, if no other groups of words, or compound-words are captured in \url{Crackstation.net}'s dictionary, that one, at least would have been.
+
+In the end, the exercise demonstrates two things:
+\begin{enumerate}
+\item md5 is too vulnerable and should not be used.
+\item sha256 and sha512 may be acceptable now, but it will not be with further developments in quantum computing.
+\item Salting of passwords, even if only by using a simple salt like \emph{NaCl} significantly improves the odds of a hash surviving a long time.
+\end{enumerate}
+
+I believe that current industry passwords of using complex salts and multiple iterations of hashing a hash are the best ways to maintain password viability \emph{for now}.
+
+
+
+\begin{longtable}{p{0.2\textwidth} p{0.6\textwidth} p{0.1\textwidth}}
+\caption{Password Cracking Activity Results}\\
+ \toprule
+
+ \textbf{Password} & \textbf{Hash Output} &  \textbf{Did Crackstation work?} \\
+ \midrule
+ \endhead
+password01 & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{af88a0ae641589b908fa8b31f0fcf6e1}\\
+SHA-256: \seqsplit{4b8f353889d9a05d17946e26d014efe99407cba8bd9d0102d4aab10ce6229043}\\
+SHA-512: \seqsplit{746a5a2664633cb15829e80cc8d5dd7368b1d939756e7b069df9df482e2afc3c44029ec71ffbf7cc9916719d861b60fc34b5bd6a4f2cb0fe7747d99d5b219162}
+\end{tabular}& Yes \\
+\\
+maple & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{c980f10a312bac1a0754a43dde093030}\\
+SHA-256: \seqsplit{32edb455097e8bf8937059b376ce08ce6369975eb7772c060e0622247b334ac6}\\
+SHA-512: \seqsplit{3f5631cf04fa59ded96bfe7b5de98a038df41732bbd404849c921766a413381149cd936d8c57d1aa2b8b4275b0fc0fabd49a3fde367200c1657cec7b7472e51e}
+\end{tabular}& Yes \\
+\\
+p@\$\$\$w0rd  & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{849a9af4aad1e54ef1e52ba04588cd04}\\
+SHA-256: \seqsplit{b3bb5a5d429c2cf5396d5d02d84541feffbea7153ee4dc974b20d04b2f18041e}\\
+SHA-512: \seqsplit{90378bb1d1e7ae7828614e2735c45a0b243d4f8eff4d14e666777be6a86db359db0ec05454f2c3a69050864d5e3fe116678509c3880b80761ad19cb4901d8208}
+\end{tabular}& Yes \\
+\\
+HGuH4jHSZNcr  & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{12a25a8157460bba6b5eb330b7485f84}\\
+SHA-256: \seqsplit{5cdb225821caeefc298c7a571f05719d269e1001be49d42cd97ed3e95110da32}\\
+SHA-512: \seqsplit{71cd24baaacc66802f28173e5a8156b72c407529e6f9e49234a16bfa805250ba124605a37881e0ec4f0a8a8a1275eab51b38d15f527af1ddd006a3b97190f6a9}
+\end{tabular}& No \\
+\\
+kwn7KxqR3JPev5  & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{7ed270ea1782df888ded750f808fb7a3}\\
+SHA-256: \seqsplit{ca51e236eea62f101929c0927555eba5cd0196971a4f81c4ab92c8e17548de84}\\
+SHA-512: \seqsplit{cf9ab81deadd97e0a183fb7fc0c3c161e3e9a67291420d2500085411a858edf05950a020e7a50496b5e39dcc1894b15a4005bb3873273d73018311f723a40a2d}
+\end{tabular}& No \\
+\\
+Eq4SqX8UHFDd  & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{af8650d53c967ae913388c99e1b8e7ee}\\
+SHA-256: \seqsplit{46c969f5a34a9f45c84fbffb59a3e416de6f66482620f99240cebb76b3d28334}\\
+SHA-512: \seqsplit{2625bb4e33069ea9fe92ed70a44f77438a14c05542b3735296fc6882566c27eae9273b7fc112305b149924fd5e74bc7160bdebef7c154be35e4de620c80f350b}
+\end{tabular}& No \\
+\\
+Y3eb3BNgx3UM9  & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{8ef6ac6f8beddcf41667aff9db151811}\\
+SHA-256: \seqsplit{5b0c48958a76d798c307fdd6878b8e5cd42a08b1d614b3ee14e24cf99ae9dc85}\\
+SHA-512: \seqsplit{b95e28c5e246fcdbded8166be4e8786a011ddda633aed950f59744415b626d13d264be7bfa276c4781315cf8230f7d3abb36be02e78893a8b744a030adcab564}
+\end{tabular}& No \\
+\\
+correct horse battery staple  & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{9cc2ae8a1ba7a93da39b46fc1019c481}\\
+SHA-256: \seqsplit{c4bbcb1fbec99d65bf59d85c8cb62ee2db963f0fe106f483d9afa73bd4e39a8a}\\
+SHA-512: \seqsplit{445c4e40a600423c6470be391563dac1d0c0be75e265944984aa6594fe8e543ccc25d528ca2bcf40ab7d8d950a05e38eda1effbbfeabeceb068db504d959492a}
+\end{tabular}& No \\
+\\
+NaClmaple& \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{1bba04dd7ef32327a7c1cdc6a1724695}\\
+SHA-256: \seqsplit{1827fd741aed61790b2e728cfa9728e61a98eba46df36be708ec35a2e541bedb}\\
+SHA-512: \seqsplit{9587d262490f80df243c0cc6b439cde04574e0a5e82e157bba6f0099d0eb59e53ed9a6d32a62479e858ac6bb1153ccca55b0b51316f56e23507b972c24a00e7e}
+\end{tabular}& No \\
+\\
+NaClNaClNaCljazzy  & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{9c4cf72a9e5b4c9e41649b745dea1715}\\
+SHA-256: \seqsplit{bcf6b55094dfd1cc1755370c5ea3981434c42bc52f9c75ce8544127a457cc61f}\\
+SHA-512: \seqsplit{9587d262490f80df243c0cc6b439cde04574e0a5e82e157bba6f0099d0eb59e53ed9a6d32a62479e858ac6bb1153ccca55b0b51316f56e23507b972c24a00e7e}
+\end{tabular}& No \\
+\\
+naclnaclnaclnaclnaclnaclnaclnaclnaclnaclnaclnaclpassword  & \begin{tabular}{p{0.58\textwidth}}MD5: \seqsplit{3cb2b6d17aadef8371dfbc984c2716fe}\\
+SHA-256: \seqsplit{73483d1ae2f89b47f7d32ba9430fb7b3d59cbad73e05d98da38e3e874ea6e4d3}\\
+SHA-512: \seqsplit{d23cb4c144d199af0f6c121f06ea5f6ebd30577b97cc9049f00c510c92f1d0fdd8dad233d8cb1b071b8157a054c5f663e276be29aa00217eb6279466cfbe6d70}
+\end{tabular}& No \\
+\bottomrule
+\end{longtable}
+\section{Python program}
+\lstinputlisting[language=Python]{../main.py}
+\end{document}

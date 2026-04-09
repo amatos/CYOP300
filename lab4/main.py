@@ -2,7 +2,9 @@
 Author: Alberth Matos
 CYOP300
 Date: 07 April 2026
-Description:
+Description: This module serves as the starting point for 'the Python Matrix
+Application', Lab 4. The lab demonstrates the usage of NumPy arrays and matrix
+operations, along with the use of Pandas for data analysis.
 """
 
 from matrix_game import play_matrix_game

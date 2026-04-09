@@ -2,7 +2,11 @@
 Author: Alberth Matos
 CYOP300
 Date: 07 April 2026
-Description:
+Description: This module implements the 'Matrix Game' as part of Lab 4,
+containing the usage of NumPy and Pandas for matrix operations.
+
+This module is called by main.py, and, in turn, calls phone_and_zip.py get and
+validate phone and zip code data.
 """
 
 import numpy as np

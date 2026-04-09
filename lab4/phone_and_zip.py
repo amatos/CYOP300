@@ -2,7 +2,8 @@
 Author: Alberth Matos
 CYOP300
 Date: 07 April 2026
-Description:
+Description: This module contains functions to validate phone numbers and
+ZIP+4 codes.
 """
 
 import re

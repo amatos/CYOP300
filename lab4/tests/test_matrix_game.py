@@ -118,8 +118,8 @@ def test_display_results_prints_summary(monkeypatch, capsys):
     assert "You selected Addition. The results are:" in captured.out
     assert captured.out.count("DISPLAYED") == 2
     assert "The Transpose is:" in captured.out
-    assert "Row means:" in captured.out
-    assert "Column means:" in captured.out
+    assert "  Row means    :" in captured.out
+    assert "  Column means :" in captured.out
 
 
 def test_play_matrix_game_runs_addition_flow(monkeypatch, capsys):
