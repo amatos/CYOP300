@@ -16,5 +16,7 @@ setup(
         "matplotlib",
         "numpy",
         "pandas",
+        "textual",
+        "inquirerpy",
     ],
 )
