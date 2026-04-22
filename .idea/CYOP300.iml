@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module type="PYTHON_MODULE" version="4">
+  <component name="Flask">
+    <option name="enabled" value="true" />
+  </component>
   <component name="NewModuleRootManager">
     <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/lab5/tests" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/lab6/source" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/.stfolder" />
       <excludeFolder url="file://$MODULE_DIR$/.venv" />
+      <excludeFolder url="file://$MODULE_DIR$/lab1/documentation" />
+      <excludeFolder url="file://$MODULE_DIR$/lab1/output" />
+      <excludeFolder url="file://$MODULE_DIR$/lab5/documentation" />
+      <excludeFolder url="file://$MODULE_DIR$/lab5/output" />
+      <excludeFolder url="file://$MODULE_DIR$/lab6/documentation" />
+      <excludeFolder url="file://$MODULE_DIR$/lab6/output" />
+      <excludeFolder url="file://$MODULE_DIR$/lab7/documentation" />
+      <excludeFolder url="file://$MODULE_DIR$/lab7/output" />
+      <excludeFolder url="file://$MODULE_DIR$/lab8/documentation" />
+      <excludeFolder url="file://$MODULE_DIR$/lab8/output" />
     </content>
     <orderEntry type="jdk" jdkName="Python 3.14 (CYOP300)" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
