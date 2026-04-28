@@ -1,0 +1,114 @@
+/*
+Author: Alberth Matos
+CYOP300
+Date: 21 April 2026
+Description: Style sheet for lab 6. This style sheet defines the basic visual
+elements and style of the site.
+*/
+
+/* Import web fonts from nerdfonts for pretty icons */
+@import "https://www.nerdfonts.com/assets/css/webfont.css";
+
+/* Main body styles */
+header {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #7a7d9a;
+    border-radius: 15px;
+    background-color: #c3d7e4;
+}
+
+.site-title {
+    color: #5b5d68;
+    font-size: 2rem;
+    text-decoration: none;
+}
+
+.page-index {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #5b5d68;
+    border-radius: 15px;
+    background-color: #f6fffe;
+}
+
+.page-header {
+    color: #5b5d68;
+    font-size: 2rem;
+    text-decoration: none;
+}
+
+body {
+    background-color: #f6fffe;
+    color: #5b5d68;
+    font-family: serif;
+}
+
+h1 {
+    color: #5b5d68;
+}
+
+/* I don't like bullet points in lists */
+ul {
+    list-style-type: none;
+}
+
+.post-article {
+    margin: 20px;
+    padding: 20px;
+    border: 0 solid #5b5d68;
+    border-radius: 15px;
+    background-color: #f6fffe;
+}
+
+.footer {
+    margin: 20px;
+    padding: 20px;
+    border: 1px solid #5b5d68;
+    border-radius: 15px;
+    background-color: #c3d7e4;
+}
+
+.error-page {
+    margin: 20px;
+    padding: 20px;
+    text-align: center;
+    background-color: #f2e7d5;
+    color: #5b5d68;
+    border-radius: 15px;
+}
+
+.error-code {
+    display: block;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1;
+    margin-bottom: 1rem;
+}
+
+.error-page h1 {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.error-page p {
+    margin-bottom: 2rem;
+    font-style: italic;
+}
+
+/* Colors for links */
+a:link {
+    color: #b7a99a;
+}
+
+a:visited {
+    color: #a4a6a3;
+}
+
+a:hover {
+    color: #5b5d68;
+}
+
+a:active {
+    color: #f2e7d5;
+}
