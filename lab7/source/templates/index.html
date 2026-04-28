@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %} - Lab 6{% endblock %}
+{% block title %} - Lab 7{% endblock %}
 
 {% block content %}
 <div class="page-index">
@@ -15,6 +15,7 @@
             <span class="post-date">{{ post.date.strftime("%d %b, %Y") }}</span>
             <div class="post-meta">
                 <a href="/post/{{ post.slug }}" class="post-title">{{ post.title }}</a>
+
                 {% if post.tags %}
                 <!-- If the post has tags, display them. -->
                 <div class="post-tags">
@@ -23,6 +24,7 @@
                 {% endif %}
             </div>
         </li>
+      <br/>
         {% else %}
         <!-- If there are no posts, display a message. -->
         <li class="no-posts">Habemus nulla posta. Quo vadis?

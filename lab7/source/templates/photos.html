@@ -1,13 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Photos – Lab 6{% endblock %}
+{% block title %}Photos – Lab 7{% endblock %}
 
 {% block content %}
-<div class="post-article">
-    <h1>Photos</h1>
+<div class="static-page">
+  <h1><img src="/static/photos.png" alt="Photo gallery" width="600" height="auto"><br />
+    Photos</h1>
     <p>This is a collection of photos taken by me. Click on the image to go to the full-size photo hosted on <a
             href="https://www.flickr.com">Flickr</a></p>
-    <h2>Galley</h2>
-    <h3>People</h3>
+
+  <hr />
+    <h2>Gallery</h2>
+  <hr/>
+  <h3><img src="/static/people.png" alt="People" width="300" height="auto"><br/>
+    People</h3>
+
     <ul>
         <li><!-- In the moment between moments -->
         </li><a data-flickr-embed="true"
@@ -31,7 +37,10 @@
             <script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
         </li>
     </ul>
-    <h3>Animals</h3>
+  <hr/>
+  <h3><img src="/static/animals.png" alt="Animals" width="300" height="auto"><br/>
+    Animals</h3>
+
     <ul>
         <li><!-- Odin -->
             <a data-flickr-embed="true"
@@ -55,7 +64,10 @@
             <script async src="//embedr.flickr.com/assets/client-code.js" charset="utf-8"></script>
         </li>
     </ul>
-    <h3>Locations</h3>
+  <hr/>
+  <h3><img src="/static/places.png" alt="Places" width="300" height="auto"><br/>
+    Locations</h3>
+
     <ul>
         <li><!-- Placid Lake Erie -->
             <a data-flickr-embed="true"

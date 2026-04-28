@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+{% block title %}User Administration – Lab 7{% endblock %}
+{% block content %}
+{% macro password_field(input_id, requirements_id, label_text="Password") %}
+<div>
+    <label for="{{ input_id }}">{{ label_text }}</label><br/>
+    <input
+            type="password"
+            id="{{ input_id }}"
+            name="password"
+            required
+            autocomplete="new-password"
+            aria-describedby="{{ requirements_id }}"
+    />
+    <p id="{{ requirements_id }}">
+        Password must be at least 12 characters and include one uppercase
+        letter, one lowercase letter, one number, and one symbol. Please note
+        that whitespace is not counted as a symbol.
+    </p>
+</div>
+{% endmacro %}
+<div class="post-article">
+    <h1>User Administration</h1>
+    {% if message %}
+    <p class="message_category">{{ message }}</p>
+    {% endif %}
+    <h2>Existing Users</h2>
+    {% if users %}
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Username (e-mail address)</th>
+            <th>Role</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user_id, name, username, role in users %}
+        <tr>
+            <td>{{ user_id }}</td>
+            <td>{{ name }}</td>
+            <td>{{ username }}</td>
+            <td>{{ role }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No users found.</p>
+    {% endif %}
+    <hr/>
+    <h2>Create User</h2>
+    <form method="post" action="{{ url_for('user_admin') }}">
+        <input type="hidden" name="action" value="create_user"/>
+        <div>
+            <label for="create_name">Name</label><br/>
+            <input
+                    type="text"
+                    id="create_name"
+                    name="name"
+                    required
+                    autocomplete="name"
+            />
+        </div>
+        <div>
+            <label for="create_username">Username (e-mail address)</label><br/>
+            <input
+                    type="email"
+                    id="create_username"
+                    name="username"
+                    required
+                    autocomplete="username"
+            />
+        </div>
+        {{ password_field("create_password", "create_password_requirements") }}
+        <div>
+            <button type="submit" id="create_user_button" disabled>Create User</button>
+        </div>
+    </form>
+    <hr/>
+    <h2>Change Password</h2>
+    <form method="post" action="{{ url_for('user_admin') }}">
+        <input type="hidden" name="action" value="change_password"/>
+        <div>
+            <label for="change_username">Username (e-mail address)</label><br/>
+            <input
+                    type="email"
+                    id="change_username"
+                    name="username"
+                    required
+                    autocomplete="username"
+            />
+        </div>
+        {{ password_field("new_password", "change_password_requirements", "New Password") }}
+        <div>
+            <button type="submit" id="change_password_button" disabled>
+                Change Password
+            </button>
+        </div>
+    </form>
+
+    <hr/>
+    <h2>Delete User</h2>
+    <form method="post" action="{{ url_for('user_admin') }}"
+          onsubmit="return confirm('Are you sure you want to delete this user?');">
+        <input type="hidden" name="action" value="delete_user"/>
+        <div>
+            <label for="delete_username">Username (e-mail address)</label><br/>
+            <input
+                    type="email"
+                    id="delete_username"
+                    name="username"
+                    required
+                    autocomplete="username"
+            />
+        </div>
+        <div>
+            <button type="submit" id="delete_user_button" disabled>Delete User</button>
+        </div>
+    </form>
+    <p>
+        <a href="/" class="back-link">&larr; Return to top of site.</a>
+    </p>
+</div>
+<script>
+    const INPUT_EVENT_NAME = "input";
+    const VALID_REQUIREMENTS_COLOR = "green";
+    const INVALID_REQUIREMENTS_COLOR = "red";
+    const PASSWORD_REQUIREMENTS_TEXT =
+        "Password must be at least 12 characters and include one uppercase " +
+      "letter, one lowercase letter, one number, and one symbol. Whitespace " +
+      "is not counted as a symbol.";
+    const PASSWORD_VALID_TEXT = "Password meets requirements.";
+
+    function getElement(elementId) {
+        return document.getElementById(elementId);
+    }
+
+    function isBlankValue(value) {
+        return value.trim() === "";
+    }
+
+    function isRequiredInputValid(inputElement) {
+        return !isBlankValue(inputElement.value) && inputElement.validity.valid;
+    }
+
+    function passwordMeetsRequirements(password) {
+        const hasMinimumLength = Array.from(password).length >= 12;
+        const hasUppercase = /\p{Lu}/u.test(password);
+        const hasLowercase = /\p{Ll}/u.test(password);
+        const hasNumber = /[0-9]/.test(password);
+        const hasSymbol = /[^\p{L}\p{N}\s]/u.test(password);
+
+        return (
+            hasMinimumLength &&
+            hasUppercase &&
+            hasLowercase &&
+            hasNumber &&
+            hasSymbol
+        );
+    }
+
+    function updatePasswordRequirements(requirementsElement, passwordIsValid) {
+        if (!requirementsElement) {
+            return;
+        }
+
+        requirementsElement.setAttribute("aria-live", "polite");
+        requirementsElement.textContent = passwordIsValid
+            ? PASSWORD_VALID_TEXT
+            : PASSWORD_REQUIREMENTS_TEXT;
+        requirementsElement.style.color = passwordIsValid
+            ? VALID_REQUIREMENTS_COLOR
+            : INVALID_REQUIREMENTS_COLOR;
+    }
+
+    function bindInputListeners(inputElements, listener) {
+        inputElements.forEach((inputElement) => {
+            inputElement.addEventListener(INPUT_EVENT_NAME, listener);
+        });
+    }
+
+    function bindRequiredTextValidation(textInputId, submitButtonId) {
+        const textInput = getElement(textInputId);
+        const submitButton = getElement(submitButtonId);
+
+        if (!textInput || !submitButton) {
+            return;
+        }
+
+        function updateSubmitButtonState() {
+            submitButton.disabled = !isRequiredInputValid(textInput);
+        }
+
+        textInput.addEventListener(INPUT_EVENT_NAME, updateSubmitButtonState);
+        updateSubmitButtonState();
+    }
+
+    function bindFormValidation({
+                                    requiredInputIds,
+                                    passwordInputId,
+                                    submitButtonId,
+                                    requirementsId,
+                                }) {
+        const requiredInputs = requiredInputIds.map(getElement);
+        const passwordInput = getElement(passwordInputId);
+        const submitButton = getElement(submitButtonId);
+        const requirements = getElement(requirementsId);
+
+        if (
+            requiredInputs.some((inputElement) => !inputElement) ||
+            !passwordInput ||
+            !submitButton ||
+            !requirements
+        ) {
+            return;
+        }
+
+        function updateSubmitButtonState() {
+            const requiredInputsAreValid = requiredInputs.every(isRequiredInputValid);
+            const passwordIsValid = passwordMeetsRequirements(passwordInput.value);
+            const formIsValid = requiredInputsAreValid && passwordIsValid;
+
+            submitButton.disabled = !formIsValid;
+            updatePasswordRequirements(requirements, passwordIsValid);
+        }
+
+        bindInputListeners(
+            [...requiredInputs, passwordInput],
+            updateSubmitButtonState
+        );
+        updateSubmitButtonState();
+    }
+
+    bindFormValidation({
+        requiredInputIds: ["create_name", "create_username"],
+        passwordInputId: "create_password",
+        submitButtonId: "create_user_button",
+        requirementsId: "create_password_requirements",
+    });
+
+    bindFormValidation({
+        requiredInputIds: ["change_username"],
+        passwordInputId: "new_password",
+        submitButtonId: "change_password_button",
+        requirementsId: "change_password_requirements",
+    });
+
+    bindRequiredTextValidation("delete_username", "delete_user_button");
+</script>
+{% endblock %}

@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lab6 - The Simple Blogengine</title>
+    <title>Lab7 - The Simple Blogengine, mk.ii</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 
@@ -13,18 +13,26 @@
     <!-- Header block for each page.  Contains navigation links to the entire site -->
     <header>
         <div class="header">
-            <div class="site-title">Lab 6</div>
+            <div class="site-title">Lab 7</div>
             <nav>
                 <a href="/">Main</a> |
+                {% if "username" not in session %}
+                <a href="/login">Log In</a> /
+                <a href="/create_account">Create Account</a>
+                {% else %}
                 <a href="/about">About</a> |
                 <a href="/contact">Contact</a> |
                 <a href="/photos">Photography</a> |
-                <a href="/broken_page">Purposefully broken link</a>
+                <a href="/broken_page">Purposefully broken link</a> |
+                <a href="/logout">Log Out</a> |
+                {% endif %}
+                {% if session.get("is_admin", False) %}
+                <a href="/user_admin">User Admin</a>
+                {% endif %}
             </nav>
         </div>
     </header>
 
-    <!-- Main content used by the other templates. -->
     <main>
         {% block content %}{% endblock %}
     </main>

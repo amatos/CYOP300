@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Create Account – Lab 7{% endblock %}
+
+{% block content %}
+<div class="post-article">
+    <h1>Create Account</h1>
+
+    {% if message %}
+    <p>{{ message }}</p>
+    {% endif %}
+
+    <form method="post" action="/create_account">
+        <div>
+            <label for="name">Name</label><br />
+            <input
+                type="text"
+                id="name"
+                name="name"
+                required
+                autocomplete="name"
+            />
+        </div>
+
+        <div>
+            <label for="username">Email</label><br />
+            <input
+                type="email"
+                id="username"
+                name="username"
+                required
+                autocomplete="email"
+            />
+        </div>
+
+        <div>
+            <label for="password">Password</label><br />
+            <input
+                type="password"
+                id="password"
+                name="password"
+                required
+                autocomplete="new-password"
+            />
+        </div>
+
+        <div>
+            <label for="confirm_password">Confirm Password</label><br />
+            <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                required
+                autocomplete="new-password"
+            />
+            <p id="password_requirements">
+                Password must be at least 12 characters and include one uppercase
+                letter, one lowercase letter, one number, and one symbol.
+            </p>
+            <p id="password_match_message">Passwords must match.</p>
+        </div>
+
+        <div>
+            <button type="submit" id="create_account_button" disabled>Create Account</button>
+        </div>
+    </form>
+
+    <script>
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirm_password");
+        const createAccountButton = document.getElementById("create_account_button");
+        const passwordRequirements = document.getElementById("password_requirements");
+        const passwordMatchMessage = document.getElementById("password_match_message");
+
+        function passwordMeetsRequirements(password) {
+            const hasMinimumLength = password.length >= 12;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasSymbol = /[^A-Za-z0-9]/.test(password);
+
+            return hasMinimumLength && hasUppercase && hasLowercase && hasNumber && hasSymbol;
+        }
+
+        function updateCreateAccountButton() {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+            const passwordIsValid = passwordMeetsRequirements(password);
+            const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
+
+            createAccountButton.disabled = !(passwordIsValid && passwordsMatch);
+
+            passwordRequirements.style.color = passwordIsValid ? "green" : "red";
+            passwordMatchMessage.style.color = passwordsMatch ? "green" : "red";
+            passwordMatchMessage.textContent = passwordsMatch
+                ? "Passwords match."
+                : "Passwords must match.";
+        }
+
+        passwordInput.addEventListener("input", updateCreateAccountButton);
+        confirmPasswordInput.addEventListener("input", updateCreateAccountButton);
+
+        updateCreateAccountButton();
+    </script>
+
+    <p>
+        Already have an account?
+        <a href="/login">Log in instead</a>.
+    </p>
+
+    <p>
+        <a href="/" class="back-link">&larr; Return to top of site.</a>
+    </p>
+</div>
+{% endblock %}

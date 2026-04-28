@@ -1,8 +1,8 @@
 /*
 Author: Alberth Matos
 CYOP300
-Date: 21 April 2026
-Description: Style sheet for lab 6. This style sheet defines the basic visual
+Date: 28 April 2026
+Description: Style sheet for lab 7. This style sheet defines the basic visual
 elements and style of the site.
 */
 
@@ -39,7 +39,7 @@ header {
 }
 
 body {
-    background-color: #f6fffe;
+    background-color: #f6fffe; w
     color: #5b5d68;
     font-family: serif;
 }
@@ -56,9 +56,28 @@ ul {
 .post-article {
     margin: 20px;
     padding: 20px;
-    border: 0 solid #5b5d68;
+    border: 1 solid #5b5d68;
     border-radius: 15px;
     background-color: #f6fffe;
+}
+
+.static-page {
+  margin: 20px;
+  padding: 20px;
+  border: 0 solid #5b5d68;
+  border-radius: 15px;
+  background-color: #f6fffe;
+  text-align: center;
+}
+
+.message_category {
+  margin: 20px;
+  padding: 20px;
+  text-align: center;
+  background-color: #f2e7d5;
+  color: #5b5d68;
+  border-radius: 15px;
+  font-size: 1.5rem;
 }
 
 .footer {
