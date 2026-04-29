@@ -15,10 +15,12 @@ from typing import Any, Dict, List
 
 import frontmatter
 import markdown
-from flask import Flask, Response, abort, redirect, render_template, request, session
+from flask import Flask, abort, redirect, render_template, request, session
+from werkzeug.wrappers.response import Response
 from werkzeug.exceptions import HTTPException
 
 import db
+import admin
 
 app = Flask(__name__)
 app.secret_key = os.environ.get(
@@ -224,6 +226,23 @@ def photos() -> str | Response:
 
 @app.route("/login", methods=["GET", "POST"])
 def login() -> str | Response:
+    """
+    Handles user login functionality. This endpoint supports both GET and POST methods.
+    If accessed via GET, the login form is displayed. If accessed via POST, the provided
+    username and password are authenticated against the database.
+
+    If the user is already logged in (indicated by the presence of "username" in the
+    session), they are redirected to the home page.
+
+    The login template is rendered with relevant context including an optional error
+    message and the current timestamp.
+
+    :param methods: List of HTTP methods supported for this route (GET, POST).
+    :type methods: list[str]
+    :return: A redirect to the home page upon successful login or the rendered login page with
+             an optional error message if authentication fails.
+    :rtype: str | Response
+    """
     if "username" in session:
         return redirect("/")
 
@@ -233,12 +252,11 @@ def login() -> str | Response:
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
 
-        if db.authenticate_user(username, password):
+        authenticated, message = db.authenticate_user(username, password)
+        if authenticated:
             session["username"] = username
             session["is_admin"] = db.user_is_admin(username)
             return redirect("/")
-
-        message = "Invalid username or password."
 
     return render_template(
         "login.html",
@@ -349,12 +367,11 @@ def user_admin() -> Response | str:
     :return: Rendered HTML page for user administration.
     :rtype: str
     """
-    if "username" not in session:
-        return redirect("/login_required")
     if not session.get("is_admin", False):
         abort(403)
 
     message = ""
+    users = []
 
     if request.method == "POST":
         action = request.form.get("action", "")
@@ -364,63 +381,27 @@ def user_admin() -> Response | str:
 
         if not username:
             message = "Username is required."
-        elif action == "create_user":
-            if not name:
-                message = "Name is required when creating a user."
-            elif not password:
-                message = "Password is required when creating a user."
-            else:
-                try:
-                    user_created, error_message = db.create_user(
-                        name, username, password
-                    )
-                    if user_created:
-                        message = f"User '{username}' was created."
-                    else:
-                        message = (
-                            f"Error: User '{username}' was not created: {error_message}"
-                        )
-                except Exception:
-                    message = "Unable to create user."
+        if action == "create_user":
+            message = admin.create_user(name=name, username=username, password=password)
         elif action == "change_password":
-            if not password:
-                message = "A new password is required."
-            else:
-                try:
-                    db.change_password(username, password)
-                    message = f"Password changed for user '{username}'."
-                except ValueError as e:
-                    message = str(e)
-                except Exception:
-                    message = "Unable to change password."
+            message = admin.change_password(username, password)
         elif action == "delete_user":
-            if not username:
-                message = "A username is required."
-            elif username == session["username"]:
-                message = "You cannot delete yourself."
-            elif username == "admin":
-                message = "You cannot delete the main admin user."
-            else:
-                try:
-                    db.delete_user(username)
-                    message = f"User '{username}' was deleted."
-                except ValueError as e:
-                    message = str(e)
-                except Exception:
-                    message = "Unable to delete user."
+            message = admin.delete_user(username, session["username"])
         else:
             message = "Unknown user administration action."
-
+    users, succeeded, get_user_message = db.get_users()
+    if not succeeded:
+        message = get_user_message
     return render_template(
         "user_admin.html",
-        users=db.get_users(),
+        users=users,
         message=message,
         current_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
     )
 
 
 @app.errorhandler(404)
-def not_found(e: HTTPException) -> tuple[str, int | None]:
+def not_found(e: HTTPException) -> tuple[str, int]:
     """
     Handles 404 errors by rendering a user-friendly error page.
 
@@ -431,18 +412,20 @@ def not_found(e: HTTPException) -> tuple[str, int | None]:
     description of the error.
 
     :param e: The error object representing the 404 HTTP error.
-    :type e: flask.views.HTTPException
+    :type e: werkzeug.exceptions.HTTPException
     :return: Rendered HTML template for the 404 error page.
     :rtype: str
     """
+    status_code = getattr(e, "code", 404) or 404
+    description = getattr(e, "description", "An unexpected error occurred.")
     return (
         render_template(
             "404.html",
             current_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            error_code=e.code,
-            error_description=e.description,
+            error_code=status_code,
+            error_description=description,
         ),
-        e.code,
+        status_code,
     )
 
 
@@ -450,7 +433,7 @@ def not_found(e: HTTPException) -> tuple[str, int | None]:
 @app.errorhandler(403)
 @app.errorhandler(500)
 @app.errorhandler(503)
-def generic_error(e: HTTPException) -> tuple[str, int | None]:
+def generic_error(e: HTTPException) -> tuple[str, int]:
     """
     Handles 400, 403, 500, and 503 errors by rendering a user-friendly error page.
 
@@ -459,14 +442,16 @@ def generic_error(e: HTTPException) -> tuple[str, int | None]:
     :return: Rendered HTML template for the error page.
     :rtype: str
     """
+    status_code = getattr(e, "code", 500) or 500
+    description = getattr(e, "description", "An unexpected error occurred.")
     return (
         render_template(
             "error.html",
             current_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            error_code=e.code,
-            error_description=e.description,
+            error_code=status_code,
+            error_description=description,
         ),
-        e.code,
+        status_code,
     )
 
 
