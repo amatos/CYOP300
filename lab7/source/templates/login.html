@@ -1,52 +1,50 @@
-{% extends "base.html" %}
-{% block title %}Login – Lab 7{% endblock %}
-
-{% block content %}
+{% extends "base.html" %} {% block title %}Login – Lab 7{% endblock %} {% block
+content %}
 <div class="post-article">
-    <h1>Login</h1>
+  <h1>Login</h1>
 
-    {% if message %}
+  {% if message %}
   <!-- If a message is returned, display it with the appropriate formatting. -->
   <p class="message_category">{{ message }}</p>
-    {% endif %}
+  {% endif %}
 
-    <form method="post" action="/login">
-        <div>
-            <label for="email">e-mail address</label><br />
-            <input
-                type="text"
-                id="username"
-                name="username"
-                required
-                autocomplete="email"
-            />
-        </div>
+  <form method="post" action="/login">
+    <div>
+      <label for="email">e-mail address</label><br />
+      <input
+        type="text"
+        id="username"
+        name="username"
+        required
+        autocomplete="email"
+      />
+    </div>
 
-        <div>
-            <label for="password">Password</label><br />
-            <input
-                type="password"
-                id="password"
-                name="password"
-                required
-                autocomplete="current-password"
-            />
-        </div>
+    <div>
+      <label for="password">Password</label><br />
+      <input
+        type="password"
+        id="password"
+        name="password"
+        required
+        autocomplete="current-password"
+      />
+    </div>
 
-        <div>
-            <button type="submit">Log in</button>
-        </div>
-    </form>
+    <div>
+      <button type="submit">Log in</button>
+    </div>
+  </form>
 
-  <p>
-    <a href="/forgot_password">Forgot your password</a>?
-  </p>
+  <p><a href="/forgot_password">Forgot your password</a>?</p>
   <p>
     Need an account?
     <a href="/create_account">Create Account instead</a>.
   </p>
-    <p>
-        <a href="/lab7/source/static" class="back-link">&larr; Return to top of site.</a>
-    </p>
+  <p>
+    <a href="/lab7/source/static" class="back-link"
+      >&larr; Return to top of site.</a
+    >
+  </p>
 </div>
 {% endblock %}

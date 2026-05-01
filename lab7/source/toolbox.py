@@ -103,8 +103,7 @@ def validate_password(password: str = "") -> bool:
     lowercase_count = PasswordStats(password).letters_lowercase
     if lowercase_count < PASSWORD_MIN_LOWERCASE:
         return False
-    else:
-        return True
+    return True
 
 
 def hash_password(password: str) -> str:

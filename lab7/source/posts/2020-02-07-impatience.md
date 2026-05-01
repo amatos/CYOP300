@@ -3,8 +3,8 @@ category: General
 date: 2020-02-07
 layout: post
 tags:
-- blog
-- general
+  - blog
+  - general
 title: Patience is not a virtue
 ---
 

@@ -3,17 +3,17 @@ category: General
 date: 2023-03-12
 layout: post
 tags:
-- blog
-- changes
-- general
-- college
-- citizenship
+  - blog
+  - changes
+  - general
+  - college
+  - citizenship
 title: Birthday present for myself!
 ---
 
 I'm turning 46 this year.
 
-No, ***I have turned 46 this year***.
+No, **_I have turned 46 this year_**.
 
 I don't really know how I feel about that. Well, other than maybe giving in to a little midlife crisis.
 

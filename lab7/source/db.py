@@ -7,69 +7,96 @@ database. This module relies on sqlite3 for the database operations and Path
 from pathlib for handling file paths. It also imports the validate_password
 and hash_password function from the toolbox module to ensure password strength
 before storing user credentials and to generate a hash of the password.
-
 Note on database interactions:
-    - `try`/`except`/`finally` block to connect to the database.
-      The `with` block inside of the `try` block manages only commits and
-      rollbacks, so we must explicitly handle closing the db connection
-      in the `finally` block. Expected exceptions are handled within the
-      `except` block.
+    - Database connections are wrapped with `closing(...)` so they are always
+      closed after use.
+    - The sqlite connection context manager handles commits and rollbacks.
     - Any queries to the database should be parameterized to prevent SQL
       injection attacks.
 """
 
 import sqlite3
+from contextlib import closing
 from pathlib import Path
 
-from toolbox import validate_password, hash_password
+from toolbox import hash_password, validate_password
 
 # Module constant containing the path to the database file.
 DATABASE_PATH = Path(__file__).with_name("accounts.db")
+
+GET_USERS_QUERY = """
+                  SELECT users.id, users.name, users.username, roles.role
+                  FROM users
+                           JOIN roles ON users.role_id = roles.id
+                  ORDER BY users.name \
+                  """
+DELETE_USER_QUERY = "DELETE FROM users WHERE username = ?"
+UPDATE_PASSWORD_QUERY = "UPDATE users SET password = ? WHERE username = ?"
+
+
+def execute_db_write(query: str, parameters: tuple = ()) -> int:
+    """
+    Executes a write query and returns the number of affected rows.
+
+    :param query: Parameterized SQL query to execute.
+    :param parameters: Values to bind to the SQL query.
+    :return: Number of affected rows.
+    """
+    with closing(sqlite3.connect(DATABASE_PATH)) as conn:
+        with conn:
+            cursor = conn.cursor()
+            cursor.execute(query, parameters)
+            return cursor.rowcount
+
+
+def query_rowcount_result(
+    rowcount: int,
+    not_found_message: str,
+    success_message: str,
+    duplicate_message: str | None = None,
+) -> tuple[bool, str]:
+    """
+    Converts a database row count into a standardized success tuple.
+
+    :param rowcount: Number of rows affected by a database operation.
+    :param not_found_message: Message returned when no rows were affected.
+    :param success_message: Message returned when exactly one row was affected.
+    :param duplicate_message: Message returned when more than one row was affected.
+    :return: Operation success status and message.
+    """
+    if rowcount == 0:
+        return False, not_found_message
+
+    if rowcount == 1 or duplicate_message is None:
+        return True, success_message
+
+    return False, duplicate_message
 
 
 def get_users() -> tuple[list[tuple], bool, str]:
     """
     Fetches a list of users with their details such as ID, name, username,
-    and role.
-
-    The function retrieves data by executing a SQL query that joins the
+    and role. The function retrieves data by executing a SQL query that joins the
     `users` table with the `roles` table based on the role ID. It orders the
     result by the user's name in ascending order.
 
     :return: A list of tuples, where each tuple contains the user's ID, name,
         username, and role from the database. If there is an error during execution,
         an empty list is returned instead.
-    :rtype: list[tuple]
+    :rtype: tuple[list[tuple], bool, str]
     """
-    # Define initial values
-    users = []
-    succeeded = False
-    message = ""
-    # Please see the note in the docstring for more details on the
-    # try/except/finally block
     try:
-        with sqlite3.connect(DATABASE_PATH) as conn:
-            c = conn.cursor()
-            c.execute("""
-                      SELECT users.id, users.name, users.username, roles.role
-                      FROM users
-                               JOIN roles ON users.role_id = roles.id
-                      ORDER BY users.name
-                      """)
-            users = c.fetchall()
-            succeeded = True
+        with closing(sqlite3.connect(DATABASE_PATH)) as conn:
+            cursor = conn.cursor()
+            cursor.execute(GET_USERS_QUERY)
+            return cursor.fetchall(), True, ""
     except sqlite3.Error as e:
-        succeeded = False
-        message = f"Error: {e}: Unable to connect to database."
-    finally:
-        conn.close()
-    return users, succeeded, message
+        return [], False, f"Database error while fetching users: {e}"
 
 
 def delete_user(username: str) -> tuple[bool, str]:
     """
     Deletes a user from the database based on the provided username.
-
     This function attempts to remove a user identified by the specified username
     from the database. If the operation is successful, a success message is returned.
     If an error occurs during the process, a failure message is returned instead.
@@ -81,37 +108,25 @@ def delete_user(username: str) -> tuple[bool, str]:
         and the second element is a string containing the success or error message.
     :rtype: tuple[bool, str]
     """
-    # Please see the note in the docstring for more details on the
-    # try/except/finally block
+    # Normalize usernames to lower case, and strip whitespace.
+    # email addresses are not case sensitive, so this helps prevent malicious
+    # input.
+    username = username.lower().strip()
     try:
-        with sqlite3.connect(DATABASE_PATH) as conn:
-            c = conn.cursor()
-            c.execute("DELETE FROM users WHERE username = ?", (username,))
+        rowcount = execute_db_write(DELETE_USER_QUERY, (username,))
     except sqlite3.Error as e:
-        # If we get an error, we return False and the error message.
-        succeeded = False
-        message = f"Error deleting user: {e}"
-    else:
-        # Otherwise, we need to parse the response from the database. If
-        # there were no rows affected, then we know the user did not exist.
-        # If one or more rows were affected, then we know that the user was
-        # deleted. The result never should be >1, as the username is supposed
-        # to be unique, based on create_user and on a database constraint.
-        if c.rowcount == 0:
-            succeeded = False
-            message = f"Could not delete user: {username} does not exist."
-        else:
-            succeeded = True
-            message = f"User {username} deleted successfully."
-    finally:
-        conn.close()
-    return succeeded, message
+        return False, f"Error deleting user: {e}"
+
+    return query_rowcount_result(
+        rowcount,
+        f"Could not delete user: {username} does not exist.",
+        f"User {username} deleted successfully.",
+    )
 
 
 def change_password(username: str, password: str) -> tuple[bool, str]:
     """
     Changes the password of a specified user.
-
     Validates the new password and updates it in the database if the validation
     is successful. In case of issues, raises appropriate errors or returns a
     status message indicating success or failure of the operation.
@@ -122,62 +137,33 @@ def change_password(username: str, password: str) -> tuple[bool, str]:
     :rtype: tuple[bool, str]
     :raises ValueError: If the password does not pass validation criteria.
     """
-    # Define initial values
-    succeeded = False
-    message = ""
-    # Validate the password
-    password_is_valid, error_message = validate_password(password)
-    # If the password does not pass validation, stop the activity.
+    password_is_valid = validate_password(password)
+
     if not password_is_valid:
-        raise ValueError(error_message)
-    # Please see the note in the docstring for more details on the
-    # try/except/finally block
+        raise ValueError("Password does not meet complexity requirements.")
+
     try:
-        with sqlite3.connect(DATABASE_PATH) as conn:
-            c = conn.cursor()
-            c.execute(
-                "UPDATE users SET password = ? WHERE username = ?",
-                (hash_password(password), username),
-            )
+        rowcount = execute_db_write(
+            UPDATE_PASSWORD_QUERY,
+            (hash_password(password), username),
+        )
     except sqlite3.Error as e:
-        # If we get an error, we return False and the error message.
-        succeeded = False
-        message = f"Error updating user password: {e}."
-    else:
-        # Otherwise, we need to parse the response from the database. If
-        # there were no rows affected, then we know the user did not exist, so
-        # we could not change the password. If one row was affected, then we
-        # know that the user's password was changed. The result never should
-        # be >1, as the username is supposed to be unique, based on
-        # create_user, and on a database constraint, so we return an error,
-        # HOWEVER, since this should never happen, we still have changed the
-        # password, so technically, this is a security issue.
-        if c.rowcount == 0:
-            succeeded = False
-            message = (
-                f"Could not update user password: User {username} does " f"not exist."
-            )
-        elif c.rowcount == 1:
-            succeeded = True
-            message = f"User {username} password updated successfully."
-        elif c.rowcount >= 1:
-            succeeded = False
-            message = (
-                f"Error updating user password: Multiple users with "
-                f"username {username} found."
-            )
-    finally:
-        conn.close()
-    return succeeded, message
+        return False, f"Error updating user password: {e}."
+
+    return query_rowcount_result(
+        rowcount,
+        f"Could not update user password: User {username} does not exist.",
+        f"User {username} password updated successfully.",
+        f"Error updating user password: Multiple users with username {username} found.",
+    )
 
 
-def authenticate_user(username: str, password: str) -> tuple[bool, str | None]:
+def authenticate_user(username: str, password: str) -> tuple[bool, str]:
     """
     Authenticates a user by verifying their username and password against stored
     credentials in the database. The function checks if the provided password's
     hash matches the stored password hash for the supplied username. We never
     store the actual plain-text password.
-
     :param username: The username of the user to authenticate.
     :type username: str
     :param password: The password of the user to authenticate.
@@ -187,14 +173,11 @@ def authenticate_user(username: str, password: str) -> tuple[bool, str | None]:
         with an error message if authentication failed.
     :rtype: tuple[bool, str | None]
     """
-    # Define initial values
     stored_hash = ""
     succeeded = False
     message = ""
-    # Please see the note in the docstring for more details on the
-    # try/except/finally block
     try:
-        with sqlite3.connect(DATABASE_PATH) as conn:
+        with closing(sqlite3.connect(DATABASE_PATH)) as conn:
             c = conn.cursor()
             c.execute("SELECT password FROM users WHERE username = ?", (username,))
             # Fetch the first row of the result set, which should contain the
@@ -205,7 +188,6 @@ def authenticate_user(username: str, password: str) -> tuple[bool, str | None]:
         succeeded = False
         message = f"Error password for login: {e}"
     else:
-        #
         if stored_hash and hash_password(password) == stored_hash[0]:
             # If the stored hash matches the provided password, we return True.
             succeeded = True
@@ -218,8 +200,6 @@ def authenticate_user(username: str, password: str) -> tuple[bool, str | None]:
             # itself exists.
             succeeded = False
             message = f"User {username} unable to log in."
-    finally:
-        conn.close()
     return succeeded, message
 
 
@@ -242,7 +222,7 @@ def user_is_admin(username: str) -> bool:
     # Please see the note in the docstring for more details on the
     # try/except/finally block
     try:
-        with sqlite3.connect(DATABASE_PATH) as conn:
+        with closing(sqlite3.connect(DATABASE_PATH)) as conn:
             c = conn.cursor()
             c.execute(
                 """
@@ -264,8 +244,6 @@ def user_is_admin(username: str) -> bool:
             # role defined (which should always be the case), and if that role
             # is "admin".
             succeeded = True
-    finally:
-        conn.close()
     return succeeded
 
 
@@ -304,7 +282,7 @@ def create_user(name: str, username: str, password: str) -> tuple[bool, str]:
     # Please see the note in the docstring for more details on the
     # try/except/finally block
     try:
-        with sqlite3.connect(DATABASE_PATH) as conn:
+        with closing(sqlite3.connect(DATABASE_PATH)) as conn:
             c = conn.cursor()
             hashed_password = hash_password(password)
             c.execute(
@@ -323,6 +301,4 @@ def create_user(name: str, username: str, password: str) -> tuple[bool, str]:
     else:
         succeeded = True
         message = f"User {username} created successfully."
-    finally:
-        conn.close()
     return succeeded, message

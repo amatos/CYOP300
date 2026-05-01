@@ -12,14 +12,15 @@ import os
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Dict, List
+
 import frontmatter
 import markdown
 from flask import Flask, abort, redirect, render_template, request, session
-from werkzeug.wrappers.response import Response
 from werkzeug.exceptions import HTTPException
+from werkzeug.wrappers.response import Response
 
-import db
 import admin
+import db
 
 # Define module-wide constants.
 app = Flask(__name__)
