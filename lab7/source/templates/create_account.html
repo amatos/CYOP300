@@ -89,11 +89,10 @@
         }
 
         function updateCreateAccountButton() {
-            <!-- function to enable the create account button only if the
-              following is met:
-              - password meets requirements
-              - password and confirmPassword match
-             -->
+            <!-- function to enable the create account button only if the following is met: -->
+            <!--   - password meets requirements -->
+            <!--   - password and confirmPassword match -->
+
             const password = passwordInput.value;
             const confirmPassword = confirmPasswordInput.value;
             const passwordIsValid = passwordMeetsRequirements(password);

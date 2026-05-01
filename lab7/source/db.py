@@ -297,7 +297,7 @@ def create_user(name: str, username: str, password: str) -> tuple[bool, str]:
     succeeded = False
     message = ""
     # Validate the password
-    password_is_valid, message = validate_password(password)
+    password_is_valid = validate_password(password)
     # If the password does not pass validation, stop the activity.
     if not password_is_valid:
         return succeeded, message
