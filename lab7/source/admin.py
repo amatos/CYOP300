@@ -8,6 +8,7 @@ module via 'flask run' or 'python3 app.py'.
 """
 
 import db
+from toolbox import validate_password, is_valid_name, is_valid_email
 
 
 def create_user(name: str = "", username: str = "", password: str | None = None) -> str:
@@ -111,7 +112,8 @@ def change_password(username: str = "", password: str | None = None) -> str:
     elif password is None:
         message = "A new password is required."
     else:
-        password_passes = db.validate_password(password)
+        # If the password does not pass validation, stop the activity.
+        password_passes = validate_password(password)
         if not password_passes:
             message = "Password does not meet requirements."
         succeeded, message = db.change_password(username, password)
