@@ -12,7 +12,7 @@ import re
 from password_strength import PasswordPolicy, PasswordStats
 
 # Validation patterns.
-NAME_PATTERN = re.compile(r"^[A-Za-z]+(?:[ ,'-][A-Za-z]+)*$")
+NAME_PATTERN = re.compile(r"^[A-Za-z]+(?:(?:[ '-]|, ?)[A-Za-z]+)*$")
 EMAIL_PATTERN = re.compile(r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$")
 
 # Password policy constants.
