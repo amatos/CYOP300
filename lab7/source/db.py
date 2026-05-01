@@ -279,8 +279,6 @@ def create_user(name: str, username: str, password: str) -> tuple[bool, str]:
     # If the password does not pass validation, stop the activity.
     if not password_is_valid:
         return succeeded, message
-    # Please see the note in the docstring for more details on the
-    # try/except/finally block
     try:
         with closing(sqlite3.connect(DATABASE_PATH)) as conn:
             c = conn.cursor()
