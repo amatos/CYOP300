@@ -154,13 +154,18 @@ def change_password(username: str, password: str) -> tuple[bool, str]:
         # password, so technically, this is a security issue.
         if c.rowcount == 0:
             succeeded = False
-            message = f"Could not update user password: User {username} does not exist."
+            message = (
+                f"Could not update user password: User {username} does " f"not exist."
+            )
         elif c.rowcount == 1:
             succeeded = True
             message = f"User {username} password updated successfully."
         elif c.rowcount >= 1:
             succeeded = False
-            message = f"Error updating user password: Multiple users with username {username} found."
+            message = (
+                f"Error updating user password: Multiple users with "
+                f"username {username} found."
+            )
     finally:
         conn.close()
     return succeeded, message

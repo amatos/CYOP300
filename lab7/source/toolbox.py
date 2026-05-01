@@ -19,23 +19,43 @@ PASSWD_MIN_SPECIAL = 1
 PASSWD_MIN_LENGTH = 12
 
 
-def is_valid_name(name):
-    # Validate that the provided name only consists of Aa-Zz, spaces, commas,
-    # apostrophes and dashes. In the real world, this might be too restrictive,
-    # as it would limit user names to roman letters that fit in the ascii
-    # character set, and would exclude any names with ordinals or diacritics
-    # as defined in ISO-8859-1, -2, -4, -7, -16, or any other character set.
-    # The functional purpose is to prevent a Little Bobby Tables* incident.
-    # *see https://xkcd.com/327/
+def is_valid_name(name: str) -> bool:
+    """
+    Check whether a given name meets specific formatting requirements.
+
+    Validate that the provided name only consists of Aa-Zz, spaces, commas,
+    apostrophes and dashes. In the real world, this might be too restrictive,
+    as it would limit user names to roman letters that fit in the ascii
+    character set, and would exclude any names with ordinals or diacritics
+    as defined in ISO-8859-1, -2, -4, -7, -16, or any other character set.
+    The functional purpose is to prevent a Little Bobby Tables* incident.
+    *see https://xkcd.com/327/
+
+    :param name: The input string representing the name to be validated.
+
+    :return: A boolean indicating whether the provided name adheres to the
+        specified format.
+    """
+
     name_pattern = r"^[A-Za-z]+(?:[ ,'-][A-Za-z]+)*$"
     return bool(re.fullmatch(name_pattern, name))
 
 
-def is_valid_email(email):
-    # Validate that the provided email address is in the correct format,
-    # without attempting to validate that the email address is actually valid
-    # or correct.
-    # The functional purpose is to prevent a Little Bobby Tables* incident.
+def is_valid_email(email: str) -> bool:
+    """
+    Check if the provided email address is in a valid format.
+
+    Validate that the provided email address is in the correct format,
+    without attempting to validate that the email address is actually valid
+    or correct.
+    The functional purpose is to prevent a Little Bobby Tables* incident.
+
+    :param email: The email address to validate.
+    :type email: str
+    :return: True if the email address matches the expected format, False otherwise.
+    :rtype: bool
+    """
+
     email_pattern = r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
     return bool(re.fullmatch(email_pattern, email))
 
