@@ -1,0 +1,51 @@
+λ pylint *.py
+************* Module app
+app.py:399:23: W0718: Catching too general exception Exception (broad-exception-caught)
+app.py:410:23: W0718: Catching too general exception Exception (broad-exception-caught)
+app.py:425:23: W0718: Catching too general exception Exception (broad-exception-caught)
+app.py:363:0: R0912: Too many branches (23/12) (too-many-branches)
+app.py:363:0: R0915: Too many statements (55/50) (too-many-statements)
+
+------------------------------------------------------------------
+Your code has been rated at 9.80/10
+
+λ pylint *.py
+************* Module admin
+admin.py:21:0: C0116: Missing function or method docstring (missing-function-docstring)
+admin.py:35:15: W0718: Catching too general exception Exception (broad-exception-caught)
+admin.py:40:0: C0116: Missing function or method docstring (missing-function-docstring)
+admin.py:55:15: W0718: Catching too general exception Exception (broad-exception-caught)
+admin.py:60:0: C0116: Missing function or method docstring (missing-function-docstring)
+admin.py:74:15: W0718: Catching too general exception Exception (broad-exception-caught)
+admin.py:79:0: C0116: Missing function or method docstring (missing-function-docstring)
+admin.py:91:4: R1703: The if statement can be replaced with 'return bool(test)' (simplifiable-if-statement)
+admin.py:91:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+
+------------------------------------------------------------------
+Your code has been rated at 9.69/10 (previous run: 9.80/10, -0.11)
+
+λ pylint *.py
+************* Module admin
+admin.py:24:0: C0301: Line too long (103/100) (line-too-long)
+admin.py:25:0: C0301: Line too long (105/100) (line-too-long)
+admin.py:32:0: C0301: Line too long (101/100) (line-too-long)
+admin.py:52:15: W0718: Catching too general exception Exception (broad-exception-caught)
+admin.py:88:15: W0718: Catching too general exception Exception (broad-exception-caught)
+admin.py:131:15: W0718: Catching too general exception Exception (broad-exception-caught)
+
+------------------------------------------------------------------
+Your code has been rated at 9.79/10 (previous run: 9.69/10, +0.10)
+
+λ pylint *.py
+************* Module admin
+admin.py:56:15: W0718: Catching too general exception Exception (broad-exception-caught)
+admin.py:92:15: W0718: Catching too general exception Exception (broad-exception-caught)
+admin.py:135:15: W0718: Catching too general exception Exception (broad-exception-caught)
+
+------------------------------------------------------------------
+Your code has been rated at 9.90/10 (previous run: 9.79/10, +0.10)
+
+λ pylint *.py
+
+-------------------------------------------------------------------
+Your code has been rated at 10.00/10 (previous run: 9.79/10, +0.21)
