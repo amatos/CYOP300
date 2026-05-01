@@ -84,6 +84,7 @@ def delete_user(username: str = "", session_username: str | None = None) -> str:
     # user IS logged in, strip any whitespace from the session username.
     if session_username is None:
         message = "You must be logged in to delete a user."
+        return message
     else:
         session_username = session_username.strip()
     # Strip any whitespace from the username to be deleted.
