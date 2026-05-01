@@ -2,6 +2,8 @@
 {% block title %}User Administration – Lab 7{% endblock %}
 {% block content %}
 {% macro password_field(input_id, requirements_id, label_text="Password") %}
+
+<!-- macro for the two password fields on this page, to minimize duplication -->
 <div>
     <label for="{{ input_id }}">{{ label_text }}</label><br/>
     <input
@@ -19,13 +21,20 @@
     </p>
 </div>
 {% endmacro %}
+
 <div class="post-article">
     <h1>User Administration</h1>
     {% if message %}
+  <!-- If a message is returned, display it with the appropriate formatting. -->
     <p class="message_category">{{ message }}</p>
     {% endif %}
+
     <h2>Existing Users</h2>
     {% if users %}
+  <!-- If there are users in the database, display them in a table, showing
+  their ID, name, username, and role. The table is formatted with a header
+  labeling each field, and contains a total of 4 columns, and as many rows
+  as there are users, plus a row for the header. -->
     <table>
         <thead>
         <tr>
@@ -50,6 +59,7 @@
     <p>No users found.</p>
     {% endif %}
     <hr/>
+  <!-- Create User section -->
     <h2>Create User</h2>
     <form method="post" action="{{ url_for('user_admin') }}">
         <input type="hidden" name="action" value="create_user"/>
@@ -79,6 +89,7 @@
         </div>
     </form>
     <hr/>
+  <!-- Change User Password section -->
     <h2>Change Password</h2>
     <form method="post" action="{{ url_for('user_admin') }}">
         <input type="hidden" name="action" value="change_password"/>
@@ -101,6 +112,7 @@
     </form>
 
     <hr/>
+  <!-- Delete User section -->
     <h2>Delete User</h2>
     <form method="post" action="{{ url_for('user_admin') }}"
           onsubmit="return confirm('Are you sure you want to delete this user?');">
@@ -123,6 +135,8 @@
         <a href="/" class="back-link">&larr; Return to top of site.</a>
     </p>
 </div>
+
+<!-- script to handle form validation, enable/disable buttons, and change text color -->
 <script>
     const INPUT_EVENT_NAME = "input";
     const VALID_REQUIREMENTS_COLOR = "green";
@@ -134,18 +148,22 @@
     const PASSWORD_VALID_TEXT = "Password meets requirements.";
 
     function getElement(elementId) {
+      <!-- Simple helper function to retrieve page DOM elements by id -->
         return document.getElementById(elementId);
     }
 
     function isBlankValue(value) {
+      <!-- Simple function to test if a value is blank -->
         return value.trim() === "";
     }
 
     function isRequiredInputValid(inputElement) {
+      <!-- Simple function to test that input is not blank, and contains valid characters -->
         return !isBlankValue(inputElement.value) && inputElement.validity.valid;
     }
 
     function passwordMeetsRequirements(password) {
+      <!-- Simple function to test that password meets requirements -->
         const hasMinimumLength = Array.from(password).length >= 12;
         const hasUppercase = /\p{Lu}/u.test(password);
         const hasLowercase = /\p{Ll}/u.test(password);
@@ -162,6 +180,8 @@
     }
 
     function updatePasswordRequirements(requirementsElement, passwordIsValid) {
+      <!-- function to set the password requirements text and color, used to
+      indicate that the input is good -->
         if (!requirementsElement) {
             return;
         }
@@ -176,12 +196,14 @@
     }
 
     function bindInputListeners(inputElements, listener) {
+      <!-- function to bind input listers to the list of input elements -->
         inputElements.forEach((inputElement) => {
             inputElement.addEventListener(INPUT_EVENT_NAME, listener);
         });
     }
 
     function bindRequiredTextValidation(textInputId, submitButtonId) {
+      <!-- function to bind required text validation to the text input and submit button -->
         const textInput = getElement(textInputId);
         const submitButton = getElement(submitButtonId);
 
@@ -203,6 +225,7 @@
                                     submitButtonId,
                                     requirementsId,
                                 }) {
+      <!-- bind form validation to create user and change password forms -->
         const requiredInputs = requiredInputIds.map(getElement);
         const passwordInput = getElement(passwordInputId);
         const submitButton = getElement(submitButtonId);
@@ -233,6 +256,7 @@
         updateSubmitButtonState();
     }
 
+    <!-- action to bind form validation to create user and change password forms -->
     bindFormValidation({
         requiredInputIds: ["create_name", "create_username"],
         passwordInputId: "create_password",
@@ -247,6 +271,7 @@
         requirementsId: "change_password_requirements",
     });
 
+    <!-- action to bind text validation to delete user form -->
     bindRequiredTextValidation("delete_username", "delete_user_button");
 </script>
 {% endblock %}

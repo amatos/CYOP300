@@ -15,11 +15,18 @@
         <div class="header">
             <div class="site-title">Lab 7</div>
             <nav>
+              <!-- Several items can only be displayed based on user state. -->
                 <a href="/">Main</a> |
                 {% if "username" not in session %}
+              <!-- If username is not in the session, the user is not logged
+              in, and should have the login and create account pages available
+              on the menu. -->
                 <a href="/login">Log In</a> /
                 <a href="/create_account">Create Account</a>
                 {% else %}
+              <!-- If a username is in the session, then the user is logged in,
+              and should be able to view the other pages, possibly excluding
+              the user admin page, if they are not an admin. -->
                 <a href="/about">About</a> |
                 <a href="/contact">Contact</a> |
                 <a href="/photos">Photography</a> |
@@ -27,6 +34,8 @@
                 <a href="/logout">Log Out</a> |
                 {% endif %}
                 {% if session.get("is_admin", False) %}
+              <!-- The user admin page is only available to admins, indicated
+              by is_admin in the session cookie. -->
                 <a href="/user_admin">User Admin</a>
                 {% endif %}
             </nav>

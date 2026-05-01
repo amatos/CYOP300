@@ -3,7 +3,8 @@ Author: Alberth Matos
 CYOP300
 Date: 28 April 2026
 Description: The main entry point for the Lab 7 program. Flask executes this
-module via 'flask run' or 'python3 app.py'.
+module via 'flask run' or 'python3 app.py'. This program makes use of helper
+modules to handle db operations, and handle tasks on the user admin page.
 
 """
 
@@ -11,8 +12,6 @@ import os
 from datetime import date, datetime
 from pathlib import Path
 from typing import Any, Dict, List
-
-
 import frontmatter
 import markdown
 from flask import Flask, abort, redirect, render_template, request, session
@@ -22,7 +21,11 @@ from werkzeug.exceptions import HTTPException
 import db
 import admin
 
+# Define module-wide constants.
 app = Flask(__name__)
+# app.secret_key is used to sign the session cookie to prevent tampering.
+# In this case, we import a value from the running environment, as would be
+# done in the real world, or fall back to a lorum ipsum if one is not provided.
 app.secret_key = os.environ.get(
     "FLASK_SECRET_KEY",
     "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do "
@@ -227,20 +230,15 @@ def photos() -> str | Response:
 @app.route("/login", methods=["GET", "POST"])
 def login() -> str | Response:
     """
-    Handles user login functionality. This endpoint supports both GET and POST methods.
-    If accessed via GET, the login form is displayed. If accessed via POST, the provided
-    username and password are authenticated against the database.
+    Handles user login functionality. This function manages both GET and POST requests.
+    For GET requests, it renders the login page. For POST requests, it processes the
+    incoming username and password, authenticates the user, and either redirects them to
+    the home page (if login is successful) or re-renders the login page with an error
+    message.
 
-    If the user is already logged in (indicated by the presence of "username" in the
-    session), they are redirected to the home page.
-
-    The login template is rendered with relevant context including an optional error
-    message and the current timestamp.
-
-    :param methods: List of HTTP methods supported for this route (GET, POST).
-    :type methods: list[str]
-    :return: A redirect to the home page upon successful login or the rendered login page with
-             an optional error message if authentication fails.
+    :param methods: The allowed HTTP methods for this route, which are GET and POST.
+    :return: For authenticated users, a redirect response to the home page. For
+        unauthenticated users, the login form is re-rendered with an error message.
     :rtype: str | Response
     """
     if "username" in session:
@@ -251,9 +249,12 @@ def login() -> str | Response:
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
-
+        # call the authenticate_user function from the db module to check if
+        # the user exists, and has provided the correct password.
         authenticated, message = db.authenticate_user(username, password)
         if authenticated:
+            # If the user is authenticated, set the session variable
+            # 'username', and check if the user is an admin.
             session["username"] = username
             session["is_admin"] = db.user_is_admin(username)
             return redirect("/")
@@ -308,17 +309,22 @@ def create_account() -> str | Response:
     :return: Rendered HTML page for the create account page.
     :rtype: str
     """
+    # if the username is set in the session, then the user does not need to
+    # create an account. Redirect them to the home page instead.
+    # Note: the create/login pages should not display to logged in users.
     if "username" in session:
         return redirect("/")
 
     message = ""
 
     if request.method == "POST":
+        # Get the form data and strip any whitespace from the username and password.
         name = request.form.get("name", "").strip()
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
         confirm_password = request.form.get("confirm_password", "")
 
+        # Perform validation checks on the form data.
         if not name:
             message = "Name is required."
         elif not username:
@@ -328,14 +334,14 @@ def create_account() -> str | Response:
         elif password != confirm_password:
             message = "Passwords do not match."
         else:
-            user_created, error_message = db.create_user(name, username, password)
+            # If all validation checks pass, create the user account.
+            user_created, message = db.create_user(name, username, password)
 
             if user_created:
+                # If the user is created, set the session variable
+                # 'username', and redirect them to the home page.
                 session["username"] = username
-                session["is_admin"] = db.user_is_admin(username)
                 return redirect("/")
-
-            message = error_message
 
     return render_template(
         "create_account.html",
@@ -362,8 +368,8 @@ def login_required() -> str:
 @app.route("/user_admin", methods=["GET", "POST"])
 def user_admin() -> Response | str:
     """
-    This route generates the user administration page. Administrators can create
-    users, delete users, and change user passwords.
+    This route generates the user administration page. Administrators can view,
+    create, and delete users, and change user passwords.
     :return: Rendered HTML page for user administration.
     :rtype: str
     """
@@ -374,11 +380,13 @@ def user_admin() -> Response | str:
     users = []
 
     if request.method == "POST":
+        # Get the form data and strip any whitespace from the username and password.
         action = request.form.get("action", "")
         name = request.form.get("name", "").strip()
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
 
+        # Perform various actions depending on the form data.
         if not username:
             message = "Username is required."
         if action == "create_user":
@@ -389,9 +397,13 @@ def user_admin() -> Response | str:
             message = admin.delete_user(username, session["username"])
         else:
             message = "Unknown user administration action."
+
+    # For a Get method, get list of users from the database and display it
+    # on the page.
     users, succeeded, get_user_message = db.get_users()
     if not succeeded:
         message = get_user_message
+
     return render_template(
         "user_admin.html",
         users=users,
@@ -416,7 +428,7 @@ def not_found(e: HTTPException) -> tuple[str, int]:
     :return: Rendered HTML template for the 404 error page.
     :rtype: str
     """
-    status_code = getattr(e, "code", 404) or 404
+    status_code = getattr(e, "code", 404)
     description = getattr(e, "description", "An unexpected error occurred.")
     return (
         render_template(
@@ -442,7 +454,7 @@ def generic_error(e: HTTPException) -> tuple[str, int]:
     :return: Rendered HTML template for the error page.
     :rtype: str
     """
-    status_code = getattr(e, "code", 500) or 500
+    status_code = getattr(e, "code", 500)
     description = getattr(e, "description", "An unexpected error occurred.")
     return (
         render_template(

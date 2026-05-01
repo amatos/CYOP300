@@ -6,12 +6,14 @@
     <h1>Create Account</h1>
 
     {% if message %}
+  <!-- If a message is returned, display it with the appropriate formatting. -->
   <p class="message_category">{{ message }}</p>
     {% endif %}
 
     <form method="post" action="/create_account">
         <div>
             <label for="name">Name</label><br />
+          <!-- name is a required field -->
             <input
                 type="text"
                 id="name"
@@ -23,6 +25,7 @@
 
         <div>
             <label for="username">Email</label><br />
+          <!-- username is a required field, and set to an email type, to make it easier for browser autofill/data entry -->
             <input
                 type="email"
                 id="username"
@@ -32,6 +35,7 @@
             />
         </div>
 
+      <!-- Both password and confirm_password are required fields, of type `password` -->
         <div>
             <label for="password">Password</label><br />
             <input
@@ -64,6 +68,7 @@
         </div>
     </form>
 
+  <!-- Basic script for password  -->
     <script>
         const passwordInput = document.getElementById("password");
         const confirmPasswordInput = document.getElementById("confirm_password");
@@ -71,7 +76,9 @@
         const passwordRequirements = document.getElementById("password_requirements");
         const passwordMatchMessage = document.getElementById("password_match_message");
 
+
         function passwordMeetsRequirements(password) {
+            <!-- function to validate that password meets basic requirements -->
             const hasMinimumLength = password.length >= 12;
             const hasUppercase = /[A-Z]/.test(password);
             const hasLowercase = /[a-z]/.test(password);
@@ -82,13 +89,18 @@
         }
 
         function updateCreateAccountButton() {
+            <!-- function to enable the create account button only if the
+              following is met:
+              - password meets requirements
+              - password and confirmPassword match
+             -->
             const password = passwordInput.value;
             const confirmPassword = confirmPasswordInput.value;
             const passwordIsValid = passwordMeetsRequirements(password);
-            const passwordsMatch = password === confirmPassword && confirmPassword.length > 0;
-
+            const passwordsMatch = password === confirmPassword;
+            <!-- Enable the create account button only if passwordIsValid and passwordsMatch -->
             createAccountButton.disabled = !(passwordIsValid && passwordsMatch);
-
+            <!-- Define colors for password requirements and match status texts -->
             passwordRequirements.style.color = passwordIsValid ? "green" : "red";
             passwordMatchMessage.style.color = passwordsMatch ? "green" : "red";
             passwordMatchMessage.textContent = passwordsMatch
@@ -96,6 +108,7 @@
                 : "Passwords must match.";
         }
 
+        <!-- add an event listener to the passwordInput and confirmPasswordInput fields, firing updateCreateAccountButton -->
         passwordInput.addEventListener("input", updateCreateAccountButton);
         confirmPasswordInput.addEventListener("input", updateCreateAccountButton);
 
