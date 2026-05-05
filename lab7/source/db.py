@@ -87,9 +87,10 @@ def get_users() -> tuple[list[tuple], bool, str]:
     """
     try:
         with closing(sqlite3.connect(DATABASE_PATH)) as conn:
-            cursor = conn.cursor()
-            cursor.execute(GET_USERS_QUERY)
-            return cursor.fetchall(), True, ""
+            with conn:
+                cursor = conn.cursor()
+                cursor.execute(GET_USERS_QUERY)
+                return cursor.fetchall(), True, ""
     except sqlite3.Error as e:
         return [], False, f"Database error while fetching users: {e}"
 
@@ -178,11 +179,12 @@ def authenticate_user(username: str, password: str) -> tuple[bool, str]:
     message = ""
     try:
         with closing(sqlite3.connect(DATABASE_PATH)) as conn:
-            c = conn.cursor()
-            c.execute("SELECT password FROM users WHERE username = ?", (username,))
-            # Fetch the first row of the result set, which should contain the
-            # hashed password
-            stored_hash = c.fetchone()
+            with conn:
+                c = conn.cursor()
+                c.execute("SELECT password FROM users WHERE username = ?", (username,))
+                # Fetch the first row of the result set, which should contain the
+                # hashed password
+                stored_hash = c.fetchone()
     except sqlite3.Error as e:
         # If we get an error, we return False and the error message.
         succeeded = False
@@ -223,17 +225,18 @@ def user_is_admin(username: str) -> bool:
     # try/except/finally block
     try:
         with closing(sqlite3.connect(DATABASE_PATH)) as conn:
-            c = conn.cursor()
-            c.execute(
-                """
-                SELECT roles.role
-                FROM users
-                         JOIN roles ON users.role_id = roles.id
-                WHERE users.username = ?
-                """,
-                (username,),
-            )
-            role = c.fetchone()
+            with conn:
+                c = conn.cursor()
+                c.execute(
+                    """
+                    SELECT roles.role
+                    FROM users
+                             JOIN roles ON users.role_id = roles.id
+                    WHERE users.username = ?
+                    """,
+                    (username,),
+                )
+                role = c.fetchone()
     except sqlite3.Error:
         # If we get an error, we return False and the error message.
         succeeded = False
@@ -274,6 +277,11 @@ def create_user(name: str, username: str, password: str) -> tuple[bool, str]:
     # Define initial values
     succeeded = False
     message = ""
+
+    # Normalize input before saving.
+    name = name.strip()
+    username = username.lower().strip()
+
     # Validate the password
     password_is_valid = validate_password(password)
     # If the password does not pass validation, stop the activity.
@@ -281,12 +289,13 @@ def create_user(name: str, username: str, password: str) -> tuple[bool, str]:
         return succeeded, message
     try:
         with closing(sqlite3.connect(DATABASE_PATH)) as conn:
-            c = conn.cursor()
-            hashed_password = hash_password(password)
-            c.execute(
-                "INSERT INTO users (name, username, password, role_id) VALUES (?, ?, ?, ?)",
-                (name, username, hashed_password, 2),
-            )
+            with conn:
+                c = conn.cursor()
+                hashed_password = hash_password(password)
+                c.execute(
+                    "INSERT INTO users (name, username, password, role_id) VALUES (?, ?, ?, ?)",
+                    (name, username, hashed_password, 2),
+                )
     except sqlite3.IntegrityError:
         # An integrity error indicates that the username is already in use.
         # The database enforces uniqueness on users.username via a constraint.

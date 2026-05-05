@@ -1,3 +1,4 @@
+Run 1:
 λ pylint *.py
 ************* Module app
 app.py:399:23: W0718: Catching too general exception Exception (broad-exception-caught)
@@ -9,6 +10,7 @@ app.py:363:0: R0915: Too many statements (55/50) (too-many-statements)
 ------------------------------------------------------------------
 Your code has been rated at 9.80/10
 
+Run 2:
 λ pylint *.py
 ************* Module admin
 admin.py:21:0: C0116: Missing function or method docstring (missing-function-docstring)
@@ -24,6 +26,7 @@ admin.py:91:4: R1705: Unnecessary "else" after "return", remove the "else" and d
 ------------------------------------------------------------------
 Your code has been rated at 9.69/10 (previous run: 9.80/10, -0.11)
 
+Run 3:
 λ pylint *.py
 ************* Module admin
 admin.py:24:0: C0301: Line too long (103/100) (line-too-long)
@@ -36,6 +39,7 @@ admin.py:131:15: W0718: Catching too general exception Exception (broad-exceptio
 ------------------------------------------------------------------
 Your code has been rated at 9.79/10 (previous run: 9.69/10, +0.10)
 
+Run 4:
 λ pylint *.py
 ************* Module admin
 admin.py:56:15: W0718: Catching too general exception Exception (broad-exception-caught)
@@ -45,6 +49,7 @@ admin.py:135:15: W0718: Catching too general exception Exception (broad-exceptio
 ------------------------------------------------------------------
 Your code has been rated at 9.90/10 (previous run: 9.79/10, +0.10)
 
+Run 5:
 λ pylint *.py
 
 -------------------------------------------------------------------
