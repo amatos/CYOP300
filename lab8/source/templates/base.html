@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+  <!-- Main html header -->
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lab7 - The Simple Blogengine, mk.ii</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+  </head>
+
+  <body>
+    <!-- Header block for each page.  Contains navigation links to the entire site -->
+    <header>
+      <div class="header">
+        <div class="site-title">Lab 7</div>
+        <nav>
+          <!-- Several items can only be displayed based on user state. -->
+          <a href="/">Main</a> | {% if "username" not in session %}
+          <!-- If username is not in the session, the user is not logged
+              in, and should have the login and create account pages available
+              on the menu. -->
+          <a href="/login">Log In</a> /
+          <a href="/create_account">Create Account</a>
+          {% else %}
+          <!-- If a username is in the session, then the user is logged in,
+              and should be able to view the other pages, possibly excluding
+              the user admin page, if they are not an admin. -->
+          <a href="/about">About</a> | <a href="/contact">Contact</a> |
+          <a href="/photos">Photography</a> |
+          <a href="/broken_page">Purposefully broken link</a> |
+          <a href="/logout">Log Out</a> | {% endif %} {% if
+          session.get("is_admin", False) %}
+          <!-- The user admin page is only available to admins, indicated
+              by is_admin in the session cookie. -->
+          <a href="/user_admin">User Admin</a>
+          {% endif %}
+        </nav>
+      </div>
+    </header>
+
+    <main>{% block content %}{% endblock %}</main>
+
+    <!-- Common footer for all pages. Icons provided by Nerd Fonts via style.css -->
+    <footer>
+      <div class="footer">
+        <p>External Links:</p>
+        <ol>
+          <li>
+            <a href="https://github.com/amatos"
+              ><i class="nf nf-oct-mark_github"></i> GitHub</a
+            >
+          </li>
+          <li>
+            <a href="https://www.linkedin.com/in/alberthmatos/"
+              ><i class="nf nf-fa-linkedin_square"></i> LinkedIn</a
+            >
+          </li>
+          <li>
+            <a href="https://mastodon.social/@alberthmatos"
+              ><i class="nf nf-fa-mastodon"></i> Mastodon</a
+            >
+          </li>
+          <li>
+            <a
+              href="https://openpgpkey.matos.cc/.well-known/openpgpkey/matos.cc/hu/hah4j8h73y4qhdxez8g3dsj9rdibnhqi"
+              >PGP Key</a
+            >
+          </li>
+        </ol>
+        <!-- Print the time stamp on every rendered page -->
+        <p>In fine paginae ad {{ current_time }}.</p>
+      </div>
+      <!-- Pretty footer information describing tools used to create this app. -->
+      <div style="text-align: center">
+        Created with <i class="nf nf-fa-html5"></i> HTML,
+        <i class="nf nf-fa-css3"></i> CSS, and
+        <i class="nf nf-fa-python"></i> Python, via
+        <i class="nf nf-fa-flask"></i> Flask
+      </div>
+    </footer>
+  </body>
+</html>

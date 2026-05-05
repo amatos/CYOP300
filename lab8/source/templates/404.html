@@ -1,0 +1,14 @@
+{% extends "base.html" %} {% block title %}A clean disk will seek forever – Lab
+7{% endblock %} {% block content %}
+<div class="error-page">
+  <h1>Something is obviously amiss...</h1>
+  <!-- Display a 404 error image. -->
+  <img src="/static/404.png" /><br />
+  <p>"Error 404</p>
+  <p>Your haiku could not be found</p>
+  <p>Try again later"</p>
+  <hr />
+  <p>Error code: {{ error_code }} - {{ error_description }}</p>
+  <a href="/" class="back-link">&larr; Return to top of site.</a>
+</div>
+{% endblock %}

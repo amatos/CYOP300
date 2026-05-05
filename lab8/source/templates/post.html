@@ -1,0 +1,22 @@
+{% extends "base.html" %} {% block title %}{{ post.title }} — Lab 7{% endblock
+%} {% block content %}
+<article class="post-article">
+  <header class="article-header">
+    <div class="article-date">{{ post.date.strftime("%B %d, %Y") }}</div>
+    <h1>{{ post.title }}</h1>
+    {% if post.tags %}
+    <!-- If the post has tags, display them. -->
+    <div class="post-tags">
+      Tagged: {% for tag in post.tags %}<span class="tag">{{ tag }} </span>{%
+      endfor %}
+    </div>
+    {% endif %}
+  </header>
+
+  <div class="article-body">{{ post.content | safe }}</div>
+
+  <footer class="article-footer">
+    <a href="/" class="back-link">&larr; All posts</a>
+  </footer>
+</article>
+{% endblock %}

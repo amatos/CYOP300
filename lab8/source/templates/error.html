@@ -1,0 +1,9 @@
+{% extends "base.html" %} {% block title %}Guru mediation error – Lab 7{%
+endblock %} {% block content %}
+<div class="error-page">
+  <h1>Something is obviously amiss...</h1>
+  <!-- Generic error message for http 400, 500, and 503 errors. -->
+  <p>Error code: {{ error_code }} - {{ error_description }}</p>
+  <a href="/" class="back-link">&larr; Return to top of site.</a>
+</div>
+{% endblock %}
