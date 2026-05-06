@@ -524,6 +524,152 @@ def test_user_admin_post_unknown_action_sets_message(
 
 
 @patch("app.render_template")
+def test_change_password_get_renders_template(mock_render_template, logged_in_client):
+    mock_render_template.return_value = "CHANGE PASSWORD PAGE"
+
+    response = logged_in_client.get("/change_password")
+
+    assert response.status_code == 200
+    assert response.data.decode() == "CHANGE PASSWORD PAGE"
+    mock_render_template.assert_called_once_with(
+        "change_password.html",
+        message="",
+        current_time=ANY,
+    )
+
+
+@patch("app.render_template")
+@patch("app.db.authenticate_user")
+def test_change_password_post_rejects_incorrect_current_password(
+    mock_authenticate_user,
+    mock_render_template,
+    logged_in_client,
+):
+    mock_authenticate_user.return_value = (False, "invalid credentials")
+    mock_render_template.return_value = "CHANGE PASSWORD PAGE"
+
+    response = logged_in_client.post(
+        "/change_password",
+        data={
+            "current_password": "WrongPassword1!",
+            "new_password": "NewPassword1!",
+            "confirm_new_password": "NewPassword1!",
+        },
+    )
+
+    assert response.status_code == 200
+    assert mock_render_template.call_args.kwargs["message"] == "Current password is incorrect."
+
+
+@patch("app.render_template")
+@patch("app.db.authenticate_user")
+def test_change_password_post_rejects_mismatched_new_passwords(
+    mock_authenticate_user,
+    mock_render_template,
+    logged_in_client,
+):
+    mock_authenticate_user.return_value = (True, "success")
+    mock_render_template.return_value = "CHANGE PASSWORD PAGE"
+
+    response = logged_in_client.post(
+        "/change_password",
+        data={
+            "current_password": "CurrentPassword1!",
+            "new_password": "NewPassword1!",
+            "confirm_new_password": "DifferentPassword1!",
+        },
+    )
+
+    assert response.status_code == 200
+    assert mock_render_template.call_args.kwargs["message"] == "New passwords do not match."
+
+
+@patch("app.render_template")
+@patch("app.admin.change_password")
+@patch("app.db.authenticate_user")
+def test_change_password_post_success(
+    mock_authenticate_user,
+    mock_admin_change_password,
+    mock_render_template,
+    logged_in_client,
+):
+    mock_authenticate_user.return_value = (True, "success")
+    mock_admin_change_password.return_value = "Password changed for user 'user@example.com'."
+    mock_render_template.return_value = "CHANGE PASSWORD PAGE"
+
+    response = logged_in_client.post(
+        "/change_password",
+        data={
+            "current_password": "CurrentPassword1!",
+            "new_password": "NewPassword1!",
+            "confirm_new_password": "NewPassword1!",
+        },
+    )
+
+    assert response.status_code == 200
+    mock_admin_change_password.assert_called_once_with("user@example.com", "NewPassword1!")
+    assert (
+        mock_render_template.call_args.kwargs["message"]
+        == "Password changed for user 'user@example.com'."
+    )
+
+
+@patch("app.db.user_is_admin")
+@patch("app.db.authenticate_user")
+def test_login_post_does_not_set_admin_flag_for_regular_user(
+    mock_authenticate_user,
+    mock_user_is_admin,
+    client,
+):
+    mock_authenticate_user.return_value = (True, "success")
+    mock_user_is_admin.return_value = False
+
+    response = client.post(
+        "/login",
+        data={"username": "user@example.com", "password": "UserPassword1!"},
+    )
+
+    assert response.status_code == 302
+    assert response.headers["Location"].endswith("/")
+
+    with client.session_transaction() as session:
+        assert session["username"] == "user@example.com"
+        assert "is_admin" not in session
+
+
+@patch("app.render_template")
+@patch("app.db.get_users")
+def test_user_admin_get_shows_db_error_message(
+    mock_get_users,
+    mock_render_template,
+    admin_client,
+):
+    mock_get_users.return_value = ([], False, "Database connection failed.")
+    mock_render_template.return_value = "USER ADMIN PAGE"
+
+    response = admin_client.get("/user_admin")
+
+    assert response.status_code == 200
+    assert mock_render_template.call_args.kwargs["message"] == "Database connection failed."
+
+
+@patch("app.render_template")
+@patch("app.load_posts")
+def test_load_posts_returns_empty_list_when_no_posts(mock_load_posts, mock_render_template, client):
+    mock_load_posts.return_value = []
+    mock_render_template.return_value = "INDEX PAGE"
+
+    response = client.get("/")
+
+    assert response.status_code == 200
+    mock_render_template.assert_called_once_with(
+        "index.html",
+        posts=[],
+        current_time=ANY,
+    )
+
+
+@patch("app.render_template")
 def test_generic_404_handler(mock_render_template, client):
     mock_render_template.return_value = "NOT FOUND"
 

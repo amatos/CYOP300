@@ -8,8 +8,13 @@ addresses, and passwords, as well as hashing passwords.
 
 import hashlib
 import re
+from pathlib import Path
 
 from password_strength import PasswordPolicy, PasswordStats
+
+import app_logging
+
+logger = app_logging.get_logger(__name__)
 
 # Validation patterns.
 NAME_PATTERN = re.compile(r"^[A-Za-z]+(?:(?:[ '-]|, ?)[A-Za-z]+)*$")
@@ -25,6 +30,9 @@ PASSWORD_MIN_LENGTH = 12
 # Password hashing constants.
 PASSWORD_ENCODING = "utf-8"
 PASSWORD_HASH_ALGORITHM = "sha256"
+
+# Common password file path.
+COMMON_PASSWORD_FILE = Path(__file__).with_name("CommonPassword.txt")
 
 
 def is_valid_name(name: str) -> bool:
@@ -94,6 +102,13 @@ def validate_password(password: str = "") -> bool:
     :return: True if the password is valid, False otherwise.
     :rtype: bool
     """
+    # Check to see if the password is in the common passwords list.
+    # If it is, return that the password is invalid and skip the rest of
+    # the validation.
+    if is_common_password(password):
+        return False
+
+    # If the password passes initial tests, check the more thorough password policy.
     policy = build_password_policy()
     policy_violations = policy.test(password)
 
@@ -121,3 +136,24 @@ def hash_password(password: str) -> str:
     # encode password to bytes prior to feeding it into hashlib.hexdigest
     encoded_password = password.encode(PASSWORD_ENCODING)
     return hashlib.new(PASSWORD_HASH_ALGORITHM, encoded_password).hexdigest()
+
+
+def is_common_password(password: str) -> bool:
+    """
+    Check if a given password is a common password.
+
+    This function determines whether the provided password exists in a predefined
+    list of common passwords stored in a file. The comparison is performed to
+    assist in identifying passwords that are potentially insecure due to their
+    prevalence.
+
+    :param password: The password to check against the list of common passwords.
+    :type password: str
+    :return: True if the password is found in the list of common passwords, else False.
+    :rtype: bool
+    """
+    with open(COMMON_PASSWORD_FILE, "r", encoding=PASSWORD_ENCODING) as file:
+        common_passwords = file.read().splitlines()
+    if password in common_passwords:
+        return True
+    return False

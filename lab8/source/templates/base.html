@@ -4,7 +4,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Lab7 - The Simple Blogengine, mk.ii</title>
+    <title>lab8 - The Simple Blogengine, mk.ii</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/style.css') }}"
@@ -15,26 +15,27 @@
     <!-- Header block for each page.  Contains navigation links to the entire site -->
     <header>
       <div class="header">
-        <div class="site-title">Lab 7</div>
+        <div class="site-title">Lab 8</div>
         <nav>
           <!-- Several items can only be displayed based on user state. -->
           <a href="/">Main</a> | {% if "username" not in session %}
           <!-- If username is not in the session, the user is not logged
-              in, and should have the login and create account pages available
-              on the menu. -->
+          in, and should have the login and create account pages available
+          on the menu. -->
           <a href="/login">Log In</a> /
           <a href="/create_account">Create Account</a>
           {% else %}
           <!-- If a username is in the session, then the user is logged in,
-              and should be able to view the other pages, possibly excluding
-              the user admin page, if they are not an admin. -->
+          and should be able to view the other pages, possibly excluding
+          the user admin page, if they are not an admin. -->
           <a href="/about">About</a> | <a href="/contact">Contact</a> |
           <a href="/photos">Photography</a> |
           <a href="/broken_page">Purposefully broken link</a> |
+          <a href="/change_password">Change Password</a> |
           <a href="/logout">Log Out</a> | {% endif %} {% if
           session.get("is_admin", False) %}
           <!-- The user admin page is only available to admins, indicated
-              by is_admin in the session cookie. -->
+          by is_admin in the session cookie. -->
           <a href="/user_admin">User Admin</a>
           {% endif %}
         </nav>

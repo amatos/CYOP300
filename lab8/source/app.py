@@ -2,7 +2,7 @@
 Author: Alberth Matos
 CYOP300
 Date: 28 April 2026
-Description: The main entry point for the Lab 7 program. Flask executes this
+Description: The main entry point for the Lab 8 program. Flask executes this
 module via 'flask run' or 'python3 app.py'. This program makes use of helper
 modules to handle db operations, and handle tasks on the user admin page.
 
@@ -20,7 +20,13 @@ from werkzeug.exceptions import HTTPException
 from werkzeug.wrappers.response import Response
 
 import admin
+import app_logging
 import db
+
+# Initialize logging.
+app_logging.configure_logging()
+logger = app_logging.get_logger(__name__)
+logger.info("Starting the application...")
 
 # Define module-wide constants.
 app = Flask(__name__)
@@ -257,8 +263,15 @@ def login() -> str | Response:
             # If the user is authenticated, set the session variable
             # 'username', and check if the user is an admin.
             session["username"] = username
-            session["is_admin"] = db.user_is_admin(username)
+            if db.user_is_admin(username):
+                session["is_admin"] = True
+                logger.warning('Admin user "%s" logged in successfully', username)
             return redirect("/")
+        logger.warning(
+            "Failed to authenticate with provided credentials: User: %s, Request IP: %s",
+            username,
+            request.remote_addr,
+        )
 
     return render_template(
         "login.html",
@@ -298,6 +311,48 @@ def forgot_password() -> str:
     return render_template(
         "forgot_password.html",
         current_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+    )
+
+
+@app.route("/change_password", methods=["GET", "POST"])
+def change_password() -> str | Response:
+    """
+    Handles the `change_password` route, allowing an authenticated user to change
+    their account password. If the method is POST, it compares the provided current
+    password with the one stored in the database, validates that the new password
+    matches the new password confirmation, and updates the password if the
+    validation is successful.
+
+    n.b., admin.change_password() validates that the Ew password meets the password
+    requirements, including that the password is not on the common passwords list.
+
+    :param request: The HTTP request context for the route.
+    :type request: flask.Request
+
+    :return: Rendered HTML response of the `change_password.html` template displaying
+        either a success or error message, along with the current timestamp.
+    :rtype: str | flask.Response
+    """
+    message = ""
+
+    if request.method == "POST":
+        logger.warning(
+            "User %s attempting to change password.", session.get("username")
+        )
+        current_password = request.form.get("current_password", "")
+        new_password = request.form.get("new_password", "")
+        confirm_new_password = request.form.get("confirm_new_password", "")
+        authenticated, _ = db.authenticate_user(session["username"], current_password)
+        if not authenticated:
+            message = "Current password is incorrect."
+        elif new_password != confirm_new_password:
+            message = "New passwords do not match."
+        else:
+            message = admin.change_password(session["username"], new_password)
+    return render_template(
+        "change_password.html",
+        current_time=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+        message=message,
     )
 
 
@@ -374,11 +429,15 @@ def user_admin() -> Response | str:
     :return: Rendered HTML page for user administration.
     :rtype: str
     """
-    if not session.get("is_admin", False):
-        abort(403)
-
     message = ""
     users = []
+
+    if not session.get("is_admin", False):
+        logger.warning(
+            "User %s attempted to access user_admin without admin privileges.",
+            session.get("username"),
+        )
+        abort(403)
 
     if request.method == "POST":
         # Get the form data and strip any whitespace from the username and password.

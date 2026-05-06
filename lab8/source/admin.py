@@ -8,8 +8,11 @@ Description: Helper functions for the user_admin page, handling user creation,
     and password are handled by the toolbox module.
 """
 
+import app_logging
 import db
 from toolbox import is_valid_email, is_valid_name, validate_password
+
+logger = app_logging.get_logger(__name__)
 
 
 def create_user(name: str = "", username: str = "", password: str | None = None) -> str:
@@ -148,7 +151,10 @@ def change_password(username: str = "", password: str | None = None) -> str:
         # If the password does not pass validation, stop the activity.
         password_passes = validate_password(password)
         if not password_passes:
-            message = "Password does not meet requirements."
+            message = (
+                "Password does not meet requirements. Please choose a "
+                "different password."
+            )
         else:
             # If all checks pass, proceed with password change.
             # Note, we really just throw away the returned message in this instance,

@@ -1,4 +1,5 @@
 import hashlib
+from unittest.mock import mock_open, patch
 
 import pytest
 import toolbox
@@ -89,6 +90,21 @@ def test_validate_password_accepts_valid_passwords(password):
 )
 def test_validate_password_rejects_invalid_passwords(password):
     assert toolbox.validate_password(password) is False
+
+
+def test_is_common_password_returns_true_for_common_password():
+    with patch("builtins.open", mock_open(read_data="password\n123456\nqwerty")):
+        assert toolbox.is_common_password("password") is True
+
+
+def test_is_common_password_returns_false_for_uncommon_password():
+    with patch("builtins.open", mock_open(read_data="password\n123456\nqwerty")):
+        assert toolbox.is_common_password("ValidPassword1!") is False
+
+
+def test_validate_password_rejects_common_password():
+    with patch("toolbox.is_common_password", return_value=True):
+        assert toolbox.validate_password("ValidPassword1!") is False
 
 
 def test_hash_password_returns_sha256_hex_digest():

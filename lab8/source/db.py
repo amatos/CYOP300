@@ -19,7 +19,10 @@ import sqlite3
 from contextlib import closing
 from pathlib import Path
 
+import app_logging
 from toolbox import hash_password, validate_password
+
+logger = app_logging.get_logger(__name__)
 
 # Module constant containing the path to the database file.
 DATABASE_PATH = Path(__file__).with_name("accounts.db")
@@ -32,11 +35,41 @@ GET_USERS_QUERY = """
                   """
 DELETE_USER_QUERY = "DELETE FROM users WHERE username = ?"
 UPDATE_PASSWORD_QUERY = "UPDATE users SET password = ? WHERE username = ?"
+REGULAR_USER_ROLE_ID = 2
+INSERT_USER_SQL = """
+                  INSERT INTO users (name, username, password, role_id)
+                  VALUES (?, ?, ?, ?) \
+                  """
+
+
+def insert_user(name: str, username: str, password: str) -> None:
+    """
+    Inserts a new user into the database with a hashed password and a regular user
+    role. This function does not return any value and performs the operation
+    directly on the database.
+
+    :param name: The full name of the user.
+    :type name: str
+    :param username: The username to be assigned to the user.
+    :type username: str
+    :param password: The plaintext password to be hashed and stored.
+    :type password: str
+    :return: None
+    """
+    hashed_password = hash_password(password)
+
+    with closing(sqlite3.connect(DATABASE_PATH)) as conn:
+        with conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                INSERT_USER_SQL,
+                (name, username, hashed_password, REGULAR_USER_ROLE_ID),
+            )
 
 
 def execute_db_write(query: str, parameters: tuple = ()) -> int:
     """
-    Executes a write query and returns the number of affected rows.
+    Executes a write and returns the number of affected rows.
 
     :param query: Parameterized SQL query to execute.
     :param parameters: Values to bind to the SQL query.
@@ -116,8 +149,9 @@ def delete_user(username: str) -> tuple[bool, str]:
     try:
         rowcount = execute_db_write(DELETE_USER_QUERY, (username,))
     except sqlite3.Error as e:
+        logger.error("Error deleting user %s: %r", username, e, exc_info=True)
         return False, f"Error deleting user: {e}"
-
+    logger.info("User %s deleted successfully.", username)
     return query_rowcount_result(
         rowcount,
         f"Could not delete user: {username} does not exist.",
@@ -149,6 +183,7 @@ def change_password(username: str, password: str) -> tuple[bool, str]:
             (hash_password(password), username),
         )
     except sqlite3.Error as e:
+        logger.error(r"Error updating user password: %s", e, exc_info=True)
         return False, f"Error updating user password: {e}."
 
     return query_rowcount_result(
@@ -189,6 +224,7 @@ def authenticate_user(username: str, password: str) -> tuple[bool, str]:
         # If we get an error, we return False and the error message.
         succeeded = False
         message = f"Error password for login: {e}"
+        logger.error("Error password for login: %s", e, exc_info=True)
     else:
         if stored_hash and hash_password(password) == stored_hash[0]:
             # If the stored hash matches the provided password, we return True.
@@ -274,38 +310,27 @@ def create_user(name: str, username: str, password: str) -> tuple[bool, str]:
         message if the operation failed or an empty string if successful.
     :rtype: tuple[bool, str]
     """
-    # Define initial values
-    succeeded = False
-    message = ""
+    normalized_name = name.strip()
+    normalized_username = username.lower().strip()
 
-    # Normalize input before saving.
-    name = name.strip()
-    username = username.lower().strip()
+    if not validate_password(password):
+        return False, ""
 
-    # Validate the password
-    password_is_valid = validate_password(password)
-    # If the password does not pass validation, stop the activity.
-    if not password_is_valid:
-        return succeeded, message
     try:
-        with closing(sqlite3.connect(DATABASE_PATH)) as conn:
-            with conn:
-                c = conn.cursor()
-                hashed_password = hash_password(password)
-                c.execute(
-                    "INSERT INTO users (name, username, password, role_id) VALUES (?, ?, ?, ?)",
-                    (name, username, hashed_password, 2),
-                )
+        insert_user(normalized_name, normalized_username, password)
     except sqlite3.IntegrityError:
-        # An integrity error indicates that the username is already in use.
-        # The database enforces uniqueness on users.username via a constraint.
-        succeeded = False
-        message = f"Username {username} already exists."
-    except sqlite3.Error as e:
-        # If we get an error, we return False and the error message.
-        succeeded = False
-        message = f"Error creating user: {e}"
-    else:
-        succeeded = True
-        message = f"User {username} created successfully."
-    return succeeded, message
+        message = f"Username {normalized_username} already exists."
+        logger.warning(
+            "Attempted to create %s, but %s already exists.",
+            normalized_username,
+            normalized_username,
+        )
+        return False, message
+    except sqlite3.Error as error:
+        message = f"Error creating user: {error}"
+        logger.error("Error creating user: %s", error)
+        return False, message
+
+    message = f"User {normalized_username} created successfully."
+    logger.info("User %s created successfully.", normalized_username)
+    return True, message

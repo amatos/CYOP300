@@ -183,7 +183,7 @@ def test_change_password_rejects_weak_password():
         password="weak",
     )
 
-    assert message == "Password does not meet requirements."
+    assert message == "Password does not meet requirements. Please choose a different password."
 
 
 @patch("admin.db.change_password")

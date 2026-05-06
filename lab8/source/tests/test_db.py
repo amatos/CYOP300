@@ -199,3 +199,59 @@ def test_delete_user_returns_false_for_missing_user(temp_database):
 
     assert succeeded is False
     assert message == "Could not delete user: missing@example.com does not exist."
+
+
+def test_delete_user_handles_db_error(monkeypatch):
+    def raise_error(*args, **kwargs):
+        raise sqlite3.Error("disk I/O error")
+
+    monkeypatch.setattr("db.execute_db_write", raise_error)
+
+    succeeded, message = db.delete_user("user@example.com")
+
+    assert succeeded is False
+    assert "Error deleting user" in message
+
+
+def test_change_password_handles_db_error(monkeypatch):
+    def raise_error(*args, **kwargs):
+        raise sqlite3.Error("disk I/O error")
+
+    monkeypatch.setattr("db.execute_db_write", raise_error)
+
+    succeeded, message = db.change_password("user@example.com", "ValidPassword1!")
+
+    assert succeeded is False
+    assert "Error updating user password" in message
+
+
+def test_authenticate_user_returns_false_for_unknown_username(temp_database):
+    succeeded, message = db.authenticate_user("unknown@example.com", "AnyPassword1!")
+
+    assert succeeded is False
+    assert message == "User unknown@example.com unable to log in."
+
+
+def test_user_is_admin_returns_false_for_unknown_username(temp_database):
+    assert db.user_is_admin("unknown@example.com") is False
+
+
+def test_get_users_returns_empty_list_on_db_error(monkeypatch):
+    monkeypatch.setattr("db.DATABASE_PATH", "/nonexistent/path/accounts.db")
+
+    users, succeeded, message = db.get_users()
+
+    assert users == []
+    assert succeeded is False
+    assert "Database error" in message
+
+
+def test_query_rowcount_result_treats_multiple_rows_as_success_when_no_duplicate_message():
+    succeeded, message = db.query_rowcount_result(
+        2,
+        "not found",
+        "success",
+    )
+
+    assert succeeded is True
+    assert message == "success"
